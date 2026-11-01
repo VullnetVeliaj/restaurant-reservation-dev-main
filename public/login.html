@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Anmelden | TableAI</title>
+
+  <link rel="stylesheet" href="/css/style.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --page-bg: #1F1C1A;
+      --card-bg: #2B2623;
+      --secondary-bg: #231F1D;
+      --input-bg: #181514;
+
+      --border-color: rgba(255, 255, 255, 0.12);
+
+      --text-main: #FFFFFF;
+      --text-muted: #D1C5BA;
+
+      --accent: #D4A373;
+      --accent-hover: #E3B788;
+
+      --danger: #E57373;
+      --success: #4E9F5B;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: clamp(1rem, 4vw, 2rem);
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-family:
+        'Plus Jakarta Sans',
+        'Inter',
+        system-ui,
+        -apple-system,
+        sans-serif;
+
+      background:
+        radial-gradient(circle at top left,
+          rgba(212, 163, 115, 0.10),
+          transparent 36%),
+        radial-gradient(circle at bottom right,
+          rgba(168, 139, 116, 0.10),
+          transparent 38%),
+        var(--page-bg);
+
+      color: var(--text-main);
+
+      transition:
+        background 0.25s ease,
+        color 0.25s ease;
+    }
+
+    /* =====================================================
+       LIGHT THEME
+       ===================================================== */
+
+    body.theme-light {
+      --page-bg: #F3EFEA;
+      --card-bg: #FFFFFF;
+      --secondary-bg: #FAF7F4;
+      --input-bg: #FFFFFF;
+
+      --border-color: #DDD3CA;
+
+      --text-main: #292522;
+      --text-muted: #746A63;
+
+      --accent: #D4A373;
+      --accent-hover: #C9925F;
+
+      background:
+        radial-gradient(circle at top left,
+          rgba(212, 163, 115, 0.11),
+          transparent 36%),
+        radial-gradient(circle at bottom right,
+          rgba(168, 139, 116, 0.08),
+          transparent 40%),
+        #F3EFEA;
+    }
+
+    /* =====================================================
+       PAGE WRAPPER
+       ===================================================== */
+
+    .login-page {
+      width: 100%;
+      max-width: 500px;
+    }
+
+    /* =====================================================
+       THEME SWITCH
+       ===================================================== */
+
+    .login-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 12px;
+    }
+
+    .theme-select {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+
+      border-radius: 9px;
+      padding: 8px 12px;
+
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+
+      cursor: pointer;
+      outline: none;
+
+      transition: all 0.2s ease;
+    }
+
+    .theme-select:hover {
+      border-color: var(--accent);
+    }
+
+    /* =====================================================
+       LOGIN CARD
+       ===================================================== */
+
+    .login-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+
+      border-radius: 18px;
+
+      padding:
+        clamp(26px, 5vw, 38px);
+
+      width: 100%;
+
+      box-shadow:
+        0 24px 55px rgba(0, 0, 0, 0.28);
+
+      transition:
+        background 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+    }
+
+    body.theme-light .login-card {
+      box-shadow:
+        0 22px 50px rgba(75, 55, 42, 0.10);
+    }
+
+    /* =====================================================
+       HEADER
+       ===================================================== */
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .login-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 7px 16px;
+
+      border-radius: 999px;
+
+      background:
+        rgba(212, 163, 115, 0.12);
+
+      border:
+        1px solid rgba(212, 163, 115, 0.42);
+
+      color: var(--accent);
+
+      font-size: 0.72rem;
+      font-weight: 800;
+
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    body.theme-light .login-badge {
+      background: #F8EFE7;
+      border-color: #E7CDB4;
+    }
+
+    .login-header h1 {
+      font-size:
+        clamp(1.55rem, 4vw, 2rem);
+
+      margin:
+        18px 0 8px;
+
+      color: var(--text-main);
+
+      font-weight: 800;
+
+      letter-spacing: -0.035em;
+    }
+
+    .login-header p {
+      color: var(--text-muted);
+
+      font-size: 0.9rem;
+
+      line-height: 1.5;
+
+      margin: 0 auto;
+
+      max-width: 360px;
+    }
+
+    /* =====================================================
+       FORM
+       ===================================================== */
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .form-group label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .form-input {
+      width: 100%;
+
+      background:
+        var(--input-bg);
+
+      border:
+        1.5px solid var(--border-color);
+
+      border-radius: 9px;
+
+      color:
+        var(--text-main);
+
+      padding:
+        13px 14px;
+
+      font-size: 0.95rem;
+
+      font-family: inherit;
+
+      outline: none;
+
+      transition:
+        border-color 0.2s,
+        box-shadow 0.2s,
+        background 0.2s;
+    }
+
+    .form-input::placeholder {
+      color:
+        #91857B;
+    }
+
+    body.theme-light .form-input::placeholder {
+      color:
+        #A79A91;
+    }
+
+    .form-input:focus {
+      border-color:
+        var(--accent);
+
+      box-shadow:
+        0 0 0 3px rgba(212, 163, 115, 0.20);
+    }
+
+    .forgot-password-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: -4px;
+    }
+
+    .forgot-password-row a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .forgot-password-row a:hover {
+      color: var(--accent-hover);
+      text-decoration: underline;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-wrapper .form-input {
+      padding-right: 90px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+
+      border: none;
+      background: transparent;
+
+      color: var(--accent);
+
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+
+      cursor: pointer;
+
+      padding: 6px;
+    }
+
+    .password-toggle:hover {
+      color: var(--accent-hover);
+    }
+
+    /* =====================================================
+       LOGIN BUTTON
+       ===================================================== */
+
+    .btn-login {
+      width: 100%;
+
+      background:
+        var(--accent);
+
+      color:
+        #292522;
+
+      border: none;
+
+      border-radius: 9px;
+
+      padding:
+        14px 20px;
+
+      font-size: 0.98rem;
+
+      font-weight: 800;
+
+      font-family: inherit;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 8px 18px rgba(212, 163, 115, 0.20);
+
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+
+      margin-top: 4px;
+    }
+
+    .btn-login:hover:not(:disabled) {
+      background:
+        var(--accent-hover);
+
+      transform:
+        translateY(-1px);
+
+      box-shadow:
+        0 10px 22px rgba(212, 163, 115, 0.28);
+    }
+
+    .btn-login:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* =====================================================
+       FOOTER
+       ===================================================== */
+
+    .login-footer {
+      text-align:
+        center;
+
+      margin-top:
+        20px;
+
+      font-size:
+        0.82rem;
+
+      color:
+        var(--text-muted);
+
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      gap:
+        8px;
+    }
+
+    .login-footer a {
+      color:
+        var(--accent);
+
+      text-decoration:
+        none;
+
+      font-weight:
+        700;
+    }
+
+    .login-footer a:hover {
+      text-decoration:
+        underline;
+
+      color:
+        var(--accent-hover);
+    }
+
+    /* =====================================================
+       ALERTS
+       ===================================================== */
+
+    .alert-banner {
+      padding:
+        12px 14px;
+
+      border-radius:
+        8px;
+
+      font-size:
+        0.85rem;
+
+      margin-bottom:
+        16px;
+
+      display:
+        none;
+    }
+
+    .alert-banner.error {
+      background:
+        rgba(229, 115, 115, 0.12);
+
+      border:
+        1px solid rgba(229, 115, 115, 0.40);
+
+      color:
+        #FFB4B4;
+    }
+
+    body.theme-light .alert-banner.error {
+      color:
+        #A63E3E;
+    }
+
+    .alert-banner.success {
+      background:
+        rgba(78, 159, 91, 0.14);
+
+      border:
+        1px solid rgba(78, 159, 91, 0.40);
+
+      color:
+        #79D688;
+    }
+
+    body.theme-light .alert-banner.success {
+      color:
+        #357A42;
+    }
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+
+    @media (max-width: 520px) {
+      body {
+        align-items:
+          flex-start;
+
+        padding-top:
+          24px;
+      }
+
+      .login-card {
+        padding:
+          24px 20px;
+      }
+
+      .login-toolbar {
+        justify-content:
+          center;
+      }
+
+      .theme-select {
+        width:
+          100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="login-page">
+
+    <!-- Dark / Light theme -->
+    <div class="login-toolbar">
+      <select id="login-theme-selector" class="theme-select" title="Design auswählen">
+        <option value="dark">
+          🌙 Dunkles Design
+        </option>
+
+        <option value="light">
+          ☀️ Helles Design
+        </option>
+      </select>
+    </div>
+
+    <div class="login-card">
+
+      <div class="login-header">
+
+        <div class="login-badge">
+          Restaurantverwaltung
+        </div>
+
+        <h1>
+          Im Admin-Bereich anmelden
+        </h1>
+
+        <p>
+          Melden Sie sich mit Ihren Zugangsdaten an,
+          um Ihr Restaurant zu verwalten.
+        </p>
+
+      </div>
+
+      <div class="alert-banner error" id="login-error"></div>
+
+      <div class="alert-banner success" id="login-success"></div>
+
+      <div
+  id="verification-actions"
+  style="
+    display:none;
+    margin-bottom:16px;
+  "
+>
+  <button
+    type="button"
+    class="btn-login"
+    id="btn-resend-verification"
+  >
+    Bestätigungs-E-Mail erneut senden
+  </button>
+</div>
+
+      <form class="login-form" id="login-form">
+
+        <div class="form-group">
+
+          <label for="login-email">
+            E-Mail-Adresse
+          </label>
+
+          <input type="email" class="form-input" id="login-email" placeholder="inhaber@restaurant.de"
+            autocomplete="email" required />
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="login-password">
+            Passwort
+          </label>
+
+          <div class="password-wrapper">
+
+            <input type="password" class="form-input" id="login-password" placeholder="••••••••"
+              autocomplete="current-password" required />
+
+            <button type="button" class="password-toggle" id="password-toggle" aria-label="Passwort anzeigen">
+              Anzeigen
+            </button>
+
+          </div>
+
+        </div>
+
+        <div class="forgot-password-row">
+          <a href="/forgot-password.html">
+            Passwort vergessen?
+          </a>
+        </div>
+
+        <button type="submit" class="btn-login" id="btn-login-submit">
+          Anmelden & Admin-Bereich öffnen →
+        </button>
+
+      </form>
+      <div class="login-footer">
+
+        <div>
+          Noch kein Restaurantkonto?
+          <a href="/register.html">
+            Restaurant registrieren
+          </a>
+        </div>
+
+        <div>
+          <a href="/">
+            ← Zurück zur Restaurantübersicht
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    const form =
+      document.getElementById(
+        'login-form'
+      );
+
+    const emailInput =
+      document.getElementById(
+        'login-email'
+      );
+
+    const passInput =
+      document.getElementById(
+        'login-password'
+      );
+
+    const passwordToggle =
+      document.getElementById(
+        'password-toggle'
+      );
+
+    const alertError =
+      document.getElementById(
+        'login-error'
+      );
+
+    const alertSuccess =
+      document.getElementById(
+        'login-success'
+      );
+
+    const btnSubmit =
+      document.getElementById(
+        'btn-login-submit'
+      );
+
+const verificationActions =
+
+  document.getElementById(
+
+    'verification-actions'
+
+  );
+
+const resendVerificationButton =
+
+  document.getElementById(
+
+    'btn-resend-verification'
+
+  );
+
+    const themeSelector =
+      document.getElementById(
+        'login-theme-selector'
+      );
+
+
+    /* =====================================================
+       THEME
+       ===================================================== */
+
+    function applyTheme(theme) {
+
+      const finalTheme =
+        theme === 'light'
+          ? 'light'
+          : 'dark';
+
+      document.body.classList.toggle(
+        'theme-light',
+        finalTheme === 'light'
+      );
+
+      themeSelector.value =
+        finalTheme;
+
+      localStorage.setItem(
+        'login_theme',
+        finalTheme
+      );
+
+    }
+
+
+    const savedTheme =
+      localStorage.getItem(
+        'login_theme'
+      ) ||
+      localStorage.getItem(
+        'admin_theme'
+      ) ||
+      'dark';
+
+
+    applyTheme(
+      savedTheme
+    );
+
+
+    themeSelector.addEventListener(
+      'change',
+      (event) => {
+
+        applyTheme(
+          event.target.value
+        );
+
+      }
+    );
+
+    passwordToggle.addEventListener(
+      'click',
+      () => {
+
+        const isHidden =
+          passInput.type === 'password';
+
+        passInput.type =
+          isHidden
+            ? 'text'
+            : 'password';
+
+        passwordToggle.textContent =
+          isHidden
+            ? 'Ausblenden'
+            : 'Anzeigen';
+
+        passwordToggle.setAttribute(
+          'aria-label',
+          isHidden
+            ? 'Passwort ausblenden'
+            : 'Passwort anzeigen'
+        );
+
+      }
+    );
+
+
+resendVerificationButton.addEventListener(
+  'click',
+  async () => {
+
+    const email =
+      emailInput.value.trim();
+
+    alertError.style.display =
+      'none';
+
+    alertSuccess.style.display =
+      'none';
+
+
+    if (!email) {
+
+      alertError.textContent =
+        'Bitte geben Sie zuerst Ihre E-Mail-Adresse ein.';
+
+      alertError.style.display =
+        'block';
+
+      return;
+    }
+
+
+    resendVerificationButton.disabled =
+      true;
+
+    resendVerificationButton.textContent =
+      'Bestätigungs-E-Mail wird gesendet...';
+
+
+    try {
+
+      const res =
+        await fetch(
+          '/api/auth/resend-verification',
+          {
+            method:
+              'POST',
+
+            headers: {
+              'Content-Type':
+                'application/json'
+            },
+
+            body:
+              JSON.stringify({
+                email
+              })
+          }
+        );
+
+
+      const data =
+        await res.json();
+
+
+      if (
+        !res.ok ||
+        !data.success
+      ) {
+
+        throw new Error(
+          data?.error?.message ||
+          'Die Bestätigungs-E-Mail konnte nicht gesendet werden.'
+        );
+
+      }
+
+
+      alertSuccess.textContent =
+        data.message ||
+        'Die Bestätigungs-E-Mail wurde erneut gesendet.';
+
+      alertSuccess.style.display =
+        'block';
+
+      verificationActions.style.display =
+        'none';
+
+
+    } catch (err) {
+
+      alertError.textContent =
+        err.message ||
+        'Beim Senden der Bestätigungs-E-Mail ist ein Fehler aufgetreten.';
+
+      alertError.style.display =
+        'block';
+
+    } finally {
+
+      resendVerificationButton.disabled =
+        false;
+
+      resendVerificationButton.textContent =
+        'Bestätigungs-E-Mail erneut senden';
+
+    }
+
+  }
+);
+
+    /* =====================================================
+       LOGIN
+       ===================================================== */
+
+    form.addEventListener(
+      'submit',
+      async (e) => {
+
+        e.preventDefault();
+
+        alertError.style.display =
+          'none';
+
+        alertSuccess.style.display =
+          'none';
+
+verificationActions.style.display =
+  'none';
+
+        const email =
+          emailInput.value.trim();
+
+        const password =
+          passInput.value;
+
+
+        if (
+          !email ||
+          !password
+        ) {
+
+          alertError.textContent =
+            'Bitte geben Sie Ihre E-Mail-Adresse und Ihr Passwort ein.';
+
+          alertError.style.display =
+            'block';
+
+          return;
+        }
+
+
+        btnSubmit.disabled =
+          true;
+
+        btnSubmit.textContent =
+          'Zugangsdaten werden überprüft...';
+
+
+        try {
+
+          const res =
+            await fetch(
+              '/api/auth/login',
+              {
+                method:
+                  'POST',
+
+                headers: {
+                  'Content-Type':
+                    'application/json'
+                },
+
+                body:
+                  JSON.stringify({
+                    email,
+                    password
+                  })
+              }
+            );
+
+
+          const data =
+            await res.json();
+
+
+if (
+  !res.ok ||
+  !data.success
+) {
+
+  if (
+    data?.error?.code ===
+    'EMAIL_NOT_VERIFIED'
+  ) {
+
+    verificationActions.style.display =
+      'block';
+
+  }
+
+  throw new Error(
+    data?.error?.message ||
+    'Die Anmeldung ist fehlgeschlagen.'
+  );
+
+}
+
+          /* Store JWT + account */
+
+          localStorage.setItem(
+            'admin_auth_token',
+            data.token
+          );
+
+          localStorage.setItem(
+            'admin_email',
+            data.user.email
+          );
+
+          localStorage.setItem(
+            'admin_role',
+            data.user.role ||
+            'STAFF'
+          );
+
+          localStorage.setItem(
+            'admin_restaurant_id',
+            data.user.restaurant_id ||
+            data.restaurant?.id
+          );
+
+          localStorage.setItem(
+            'admin_restaurant_name',
+            data.restaurant?.name ||
+            'Restaurantbereich'
+          );
+
+
+          /*
+            Keep selected login theme
+            consistent with Admin Hub.
+          */
+
+          localStorage.setItem(
+            'admin_theme',
+            themeSelector.value
+          );
+
+
+          alertSuccess.textContent =
+            'Anmeldung erfolgreich. Der Admin-Bereich wird geöffnet...';
+
+          alertSuccess.style.display =
+            'block';
+
+
+          setTimeout(
+            () => {
+
+              const tenantId =
+                data.user.restaurant_id ||
+                data.restaurant?.id;
+
+              window.location.href =
+                `/admin.html?restaurant_id=${encodeURIComponent(
+                  tenantId
+                )}`;
+
+            },
+            700
+          );
+
+
+        } catch (err) {
+
+          alertError.textContent =
+            err.message ||
+            'Bei der Anmeldung ist ein Fehler aufgetreten.';
+
+          alertError.style.display =
+            'block';
+
+          btnSubmit.disabled =
+            false;
+
+          btnSubmit.textContent =
+            'Anmelden & Admin-Bereich öffnen →';
+
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+
+</html>

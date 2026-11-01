@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tischreservierung</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .customizer-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .customizer-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .customizer-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .customizer-select {
+      background-color: #181514;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .color-picker-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .color-swatch {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+
+    .color-swatch:hover {
+      transform: scale(1.15);
+    }
+
+    .color-swatch.active {
+      border-color: #ffffff;
+      transform: scale(1.15);
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    }
+
+    /* I.C added - page background for Light Theme */
+body.demo-light-theme {
+  background: #F3EFEA;
+  color: #292522;
+}
+
+body.demo-light-theme .customizer-bar {
+  background: #FFFFFF;
+  border-color: #DDD5CE;
+  box-shadow: 0 4px 14px rgba(60, 45, 35, 0.08);
+}
+
+body.demo-light-theme .customizer-label {
+  color: #746A63;
+}
+
+body.demo-light-theme .customizer-select {
+  background: #FFFFFF;
+  color: #292522;
+  border-color: #D6CEC7;
+}
+
+body.demo-light-theme .header h1 {
+  color: #292522;
+}
+
+body.demo-light-theme .header .subtitle {
+  color: #746A63;
+}
+
+body.demo-light-theme .card {
+  background: #FFFFFF;
+  color: #292522;
+  border-color: #DDD5CE;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav style="display: flex; justify-content: space-between; align-items: center; margin-bottom: -1rem; flex-wrap: wrap; gap: 8px;">
+      <a href="/manage.html" style="color: var(--accent); text-decoration: none; font-size: 0.875rem; font-weight: 500;">&rarr; Reservierung suchen und verwalten</a>
+      <a href="/admin.html" style="color: var(--accent); text-decoration: none; font-size: 0.875rem; font-weight: 500;">Mitarbeiter- und Verwaltungsbereich &rarr;</a>
+    </nav>
+
+    <header class="header">
+      <div class="badge">Multi-Tenant Hospitality SaaS</div>
+      <h1> Restaurant-Reservierungsplattform</h1>
+      <p class="subtitle">Professionelles, integrierbares Buchungssystem mit KI-Sprachassistent und dynamischem Branding</p>
+    </header>
+
+    <!-- Interactive Client Customization Toolbar -->
+    <div class="customizer-bar">
+      <div class="customizer-group">
+        <span class="customizer-label">Restaurant:</span>
+       <select
+  class="customizer-select"
+  id="demo-tenant"
+  disabled
+>
+  <option value="">Restaurant</option>
+</select>
+      </div>
+
+      <div class="customizer-group">
+        <span class="customizer-label">Akzentfarbe:</span>
+        <div class="color-picker-group">
+          <div class="color-swatch active" style="background: #D4A373;" data-color="#D4A373" title="Amber Gold"></div>
+          <div class="color-swatch" style="background: #4E9F5B;" data-color="#4E9F5B" title="Herb Green"></div>
+          <div class="color-swatch" style="background: #C86D51;" data-color="#C86D51" title="Terracotta"></div>
+          <div class="color-swatch" style="background: #8B5CF6;" data-color="#8B5CF6" title="Royal Amethyst"></div>
+          <div class="color-swatch" style="background: #0284C7;" data-color="#0284C7" title="Ocean Blue"></div>
+        </div>
+      </div>
+
+      <div class="customizer-group">
+        <span class="customizer-label">Darstellung:</span>
+        <select class="customizer-select" id="demo-theme">
+          <option value="dark">🌙 Dunkel</option>
+          <option value="light">☀️ Hell</option>
+        </select>
+      </div>
+    </div>
+
+    <main class="main-content">
+      <!-- Live Dynamic Booking Widget Container -->
+      <section>
+        <div id="restaurant-booking-widget"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      
+    </footer>
+  </div>
+
+  <script src="/booking-widget.js"></script>
+  <script src="/js/main.js"></script>
+  <script>
+  const demoTenant =
+    document.getElementById('demo-tenant');
+
+  const demoTheme =
+    document.getElementById('demo-theme');
+
+  const colorSwatches =
+    document.querySelectorAll('.color-swatch');
+
+  const widgetTarget =
+    document.getElementById(
+      'restaurant-booking-widget'
+    );
+
+  // -----------------------------------------
+  // Read restaurant from URL
+  // Supports:
+  // ?restaurant=rest-003
+  // ?restaurant_id=rest-003
+  // -----------------------------------------
+
+  // Public URL: /book/<slug>. The internal restaurant id is never used in the URL;
+  // legacy ?restaurant= / ?restaurant_id= links are redirected to /book/<slug>.
+  const slugMatch =
+    window.location.pathname.match(
+      /^\/book\/([^/]+)\/?$/
+    );
+
+  const selectedSlug =
+    slugMatch
+      ? decodeURIComponent(slugMatch[1])
+      : null; // never default to another restaurant
+
+  const urlParams =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const legacyRestaurantId =
+    urlParams.get('restaurant_id') ||
+    urlParams.get('restaurant') ||
+    null;
+
+
+  // -----------------------------------------
+  // Initial widget configuration
+  // -----------------------------------------
+
+  let currentConfig = {
+    // Set from the slug lookup; the widget resolves the restaurant from it
+    widgetKey:
+      null,
+
+    primaryColor:
+      '#D4A373',
+
+    accentColor:
+      '#D4A373',
+
+    bgColor:
+      '#A88B74',
+
+    font:
+      'Plus Jakarta Sans',
+
+    theme:
+      'dark',
+
+    title:
+      'Restaurant Reservations'
+  };
+
+
+  // -----------------------------------------
+  // Rebuild booking widget
+  // -----------------------------------------
+
+  function refreshWidget() {
+
+    widgetTarget.innerHTML = '';
+
+    window.RestaurantBookingWidget.init(
+      widgetTarget,
+      currentConfig
+    );
+
+  }
+
+
+  // -----------------------------------------
+  // Load PUBLIC restaurant information
+  // -----------------------------------------
+
+  async function loadRestaurantFromSlug() {
+
+    try {
+
+      demoTenant.innerHTML =
+        '<option value="">Restaurant geladen:</option>';
+
+      const response =
+        await fetch(
+          `/api/public/booking/${encodeURIComponent(
+            selectedSlug
+          )}`
+        );
+
+      const data =
+        await response.json();
+
+      if (
+        !response.ok ||
+        !data.success ||
+        !data.restaurant?.public_widget_key
+      ) {
+
+        throw new Error(
+          data?.error?.message ||
+          'Restaurant nicht verfügbar'
+        );
+
+      }
+
+
+      const restaurant =
+        data.restaurant;
+
+
+      // -------------------------------------
+      // Restaurant identity
+      // -------------------------------------
+
+      currentConfig.widgetKey =
+        restaurant.public_widget_key;
+
+      currentConfig.title =
+        `${restaurant.name} Reservations`;
+
+      // Keep this page's title (the widget only renames when none is set)
+      widgetTarget.dataset.title =
+        currentConfig.title;
+
+
+      // -------------------------------------
+      // Restaurant primary branding
+      // -------------------------------------
+
+      currentConfig.primaryColor =
+        restaurant.primary_color ||
+        '#D4A373';
+
+      currentConfig.accentColor =
+        restaurant.primary_color ||
+        '#D4A373';
+
+
+      // For now keep default warm background
+      // unless public API provides bg_color later
+
+      currentConfig.bgColor =
+        restaurant.bg_color ||
+        '#A88B74';
+
+
+      // Optional future custom font support
+
+      currentConfig.font =
+        restaurant.font ||
+        'Plus Jakarta Sans';
+
+
+      // -------------------------------------
+      // Browser title
+      // -------------------------------------
+
+      document.title =
+        `${restaurant.name} Reservations`;
+
+
+      // -------------------------------------
+      // Disabled Tenant selector
+      // -------------------------------------
+
+      demoTenant.innerHTML = '';
+
+      const option =
+        document.createElement(
+          'option'
+        );
+
+      option.value =
+        restaurant.slug;
+
+      option.textContent =
+        restaurant.name;
+
+      demoTenant.appendChild(
+        option
+      );
+
+      demoTenant.value =
+        restaurant.slug;
+
+      demoTenant.disabled =
+        true;
+
+
+      // -------------------------------------
+      // Mark matching accent circle
+      // -------------------------------------
+
+      colorSwatches.forEach(
+        (swatch) => {
+
+          swatch.classList.toggle(
+            'active',
+
+            swatch.dataset.color
+              .toLowerCase() ===
+              currentConfig
+                .accentColor
+                .toLowerCase()
+          );
+
+        }
+      );
+
+
+      // -------------------------------------
+      // Finally build the correct widget
+      // -------------------------------------
+
+      refreshWidget();
+
+
+      console.log(
+        '[Booking] Loaded restaurant:',
+        restaurant
+      );
+
+    } catch (error) {
+
+      console.error(
+        '[Booking Restaurant Load Error]',
+        error
+      );
+
+      demoTenant.innerHTML =
+        '<option value="">Restaurant nicht verfügbar</option>';
+
+      demoTenant.disabled =
+        true;
+
+      widgetTarget.innerHTML = `
+        <div style="
+          background:#ffffff;
+          color:#292522;
+          padding:24px;
+          border-radius:14px;
+          border:1px solid #ddd3ca;
+          text-align:center;
+        ">
+          <strong>
+            Restaurant nicht verfügbar
+          </strong>
+
+          <p style="
+            margin:8px 0 0;
+            color:#71675f;
+          ">
+            Dieses Restaurant konnte leider nicht geladen werden.
+          </p>
+        </div>
+      `;
+
+    }
+
+  }
+
+
+  // -----------------------------------------
+  // Accent selector
+  // Only changes accent, NOT restaurant
+  // -----------------------------------------
+
+  colorSwatches.forEach(
+    (swatch) => {
+
+      swatch.addEventListener(
+        'click',
+        () => {
+
+          colorSwatches.forEach(
+            (item) =>
+              item.classList.remove(
+                'active'
+              )
+          );
+
+          swatch.classList.add(
+            'active'
+          );
+
+          const newAccent =
+            swatch.dataset.color;
+
+          currentConfig.accentColor =
+            newAccent;
+
+
+          const instance =
+            window
+              .RestaurantBookingWidget
+              ?.activeInstance;
+
+
+          if (instance) {
+
+            instance.options.accentColor =
+              newAccent;
+
+            instance.applyBrandColors(
+              null,
+              null,
+              newAccent
+            );
+
+          }
+
+        }
+      );
+
+    }
+  );
+
+
+  // -----------------------------------------
+  // Dark / Light Theme
+  // -----------------------------------------
+
+  demoTheme.addEventListener(
+    'change',
+    (event) => {
+
+      currentConfig.theme =
+        event.target.value;
+
+
+      document.body.classList.toggle(
+        'demo-light-theme',
+        currentConfig.theme ===
+          'light'
+      );
+
+
+      refreshWidget();
+
+    }
+  );
+
+
+  // -----------------------------------------
+  // Start page
+  // -----------------------------------------
+
+  document.addEventListener(
+    'DOMContentLoaded',
+    async () => {
+
+      if (!selectedSlug) {
+
+        // Legacy link with an internal id: look up the public slug and
+        // replace the URL so the id does not stay visible
+        if (legacyRestaurantId) {
+          try {
+            const response =
+              await fetch(
+                `/api/restaurants/${encodeURIComponent(
+                  legacyRestaurantId
+                )}`
+              );
+
+            const data =
+              await response.json();
+
+            if (
+              response.ok &&
+              data.success &&
+              data.restaurant?.slug
+            ) {
+              window.location.replace(
+                `/book/${encodeURIComponent(data.restaurant.slug)}`
+              );
+              return;
+            }
+          } catch (e) { }
+        }
+
+        widgetTarget.textContent =
+          'Kein Restaurant angegeben. Bitte verwenden Sie den Buchungslink Ihres Restaurants.';
+        return;
+      }
+
+      await loadRestaurantFromSlug();
+
+    }
+  );
+</script>
+
+</body>
+</html>

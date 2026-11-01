@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Restaurant registrieren | TableAI</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --page-bg: #f6f0eb;
+      --card-bg: #ffffff;
+      --section-bg: #fbf8f5;
+
+      --text-main: #27221f;
+      --text-muted: #746b64;
+
+      --accent: #d4a373;
+      --accent-hover: #c38f5f;
+
+      --border: #ded5ce;
+      --input-border: #d9d0c9;
+
+      --success: #4e9f5b;
+      --danger: #d95f59;
+
+      --shadow:
+        0 20px 50px rgba(71, 56, 45, 0.10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      font-family:
+        "Plus Jakarta Sans",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      background:
+        radial-gradient(circle at top left,
+          rgba(212, 163, 115, 0.12),
+          transparent 34%),
+        linear-gradient(180deg,
+          #f8f4f0 0%,
+          var(--page-bg) 100%);
+
+      color: var(--text-main);
+    }
+
+    /* =========================================
+       I.C added - simple SaaS header
+       ========================================= */
+
+    .topbar {
+      width: 100%;
+      min-height: 74px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding:
+        0 clamp(22px, 5vw, 72px);
+
+      border-bottom:
+        1px solid rgba(79, 65, 55, 0.10);
+
+      background:
+        rgba(255, 255, 255, 0.76);
+
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: var(--text-main);
+      text-decoration: none;
+      letter-spacing: -0.04em;
+    }
+
+    .brand span {
+      color: var(--accent);
+    }
+
+    .topbar-login {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: none;
+
+      padding: 10px 15px;
+      border-radius: 10px;
+
+      transition:
+        background 0.2s ease,
+        color 0.2s ease;
+    }
+
+    .topbar-login:hover {
+      background: #f1e8e1;
+      color: var(--text-main);
+    }
+
+    /* =========================================
+       Main layout
+       ========================================= */
+
+    .page-shell {
+      width: 100%;
+
+      padding:
+        clamp(42px, 6vw, 76px) clamp(18px, 4vw, 36px) 70px;
+    }
+
+    .register-wrapper {
+      width: 100%;
+      max-width: 880px;
+      margin: 0 auto;
+    }
+
+    /* =========================================
+       Header
+       ========================================= */
+
+    .register-header {
+      text-align: center;
+      margin-bottom: 34px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 8px 15px;
+
+      border-radius: 999px;
+
+      background:
+        rgba(212, 163, 115, 0.12);
+
+      border:
+        1px solid rgba(212, 163, 115, 0.34);
+
+      color: #bb8251;
+
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+    }
+
+    .register-header h1 {
+      margin:
+        17px 0 10px;
+
+      font-size:
+        clamp(2.1rem, 5vw, 3.4rem);
+
+      line-height: 1.06;
+      letter-spacing: -0.05em;
+
+      color: var(--text-main);
+      font-weight: 800;
+    }
+
+    .register-header p {
+      max-width: 640px;
+      margin: 0 auto;
+
+      color: var(--text-muted);
+
+      font-size:
+        clamp(0.95rem, 2vw, 1.08rem);
+
+      line-height: 1.65;
+    }
+
+    /* =========================================
+       Main card
+       ========================================= */
+
+    .register-card {
+      width: 100%;
+
+      background:
+        rgba(255, 255, 255, 0.94);
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 24px;
+
+      padding:
+        clamp(22px, 5vw, 42px);
+
+      box-shadow:
+        var(--shadow);
+    }
+
+    /* =========================================
+       Sections
+       ========================================= */
+
+    .wizard-section {
+      background:
+        var(--section-bg);
+
+      border:
+        1px solid #e4dcd6;
+
+      border-radius: 18px;
+
+      padding:
+        clamp(18px, 4vw, 26px);
+
+      margin-bottom: 18px;
+    }
+
+    .wizard-section-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+
+      margin-bottom: 20px;
+
+      color: var(--text-main);
+
+      font-size: 0.94rem;
+      font-weight: 800;
+
+      letter-spacing: -0.01em;
+    }
+
+    .section-icon {
+      width: 34px;
+      height: 34px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 10px;
+
+      background:
+        rgba(212, 163, 115, 0.16);
+
+      font-size: 1rem;
+    }
+
+    /* =========================================
+       Forms
+       ========================================= */
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+      gap: 16px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+
+      margin-bottom: 16px;
+    }
+
+    .form-grid-2 .form-field {
+      margin-bottom: 0;
+    }
+
+    .form-field label {
+      font-size: 0.81rem;
+      font-weight: 700;
+      color: #4a423d;
+    }
+
+    .field-help {
+      font-size: 0.7rem;
+      color: #91877f;
+      line-height: 1.4;
+      margin-top: 1px;
+    }
+
+    .form-input {
+      width: 100%;
+      min-height: 50px;
+
+      background: #ffffff;
+
+      border:
+        1.5px solid var(--input-border);
+
+      border-radius: 12px;
+
+      color: var(--text-main);
+
+      padding: 12px 14px;
+
+      font-size: 0.94rem;
+      font-family: inherit;
+      font-weight: 500;
+
+      outline: none;
+
+      transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .form-input::placeholder {
+      color: #aaa19a;
+    }
+
+    .form-input:focus {
+      border-color: var(--accent);
+
+      box-shadow:
+        0 0 0 4px rgba(212, 163, 115, 0.14);
+    }
+
+    select.form-input {
+      cursor: pointer;
+    }
+
+    /* =========================================
+       Color
+       ========================================= */
+
+    .color-picker-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .color-input {
+      width: 52px;
+      height: 48px;
+
+      padding: 4px;
+
+      background: #fff;
+
+      border:
+        1.5px solid var(--input-border);
+
+      border-radius: 11px;
+
+      cursor: pointer;
+    }
+
+    .color-text-input {
+      width: 145px;
+    }
+
+    /* =========================================
+       Alerts
+       ========================================= */
+
+    .alert-banner {
+      display: none;
+
+      padding: 14px 16px;
+      margin-bottom: 18px;
+
+      border-radius: 12px;
+
+      font-size: 0.84rem;
+      font-weight: 600;
+
+      line-height: 1.5;
+    }
+
+    .alert-banner.error {
+      background:
+        rgba(217, 95, 89, 0.08);
+
+      border:
+        1px solid rgba(217, 95, 89, 0.28);
+
+      color: #ae403b;
+    }
+
+    .alert-banner.success {
+      background:
+        rgba(78, 159, 91, 0.08);
+
+      border:
+        1px solid rgba(78, 159, 91, 0.28);
+
+      color: #3f834b;
+    }
+
+    .legal-consent {
+      margin: 20px 2px 8px;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+
+      font-size: 0.78rem;
+      line-height: 1.55;
+      color: var(--text-muted);
+
+      cursor: pointer;
+    }
+
+    .checkbox-row input {
+      margin-top: 3px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .checkbox-row a {
+      color: #b87d4d;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .checkbox-row a:hover {
+      text-decoration: underline;
+    }
+
+    /* =========================================
+       Submit
+       ========================================= */
+
+    .btn-register-submit {
+      width: 100%;
+      min-height: 54px;
+
+      margin-top: 8px;
+
+      background:
+        var(--text-main);
+
+      color: #ffffff;
+
+      border: none;
+      border-radius: 13px;
+
+      padding: 14px 22px;
+
+      font-size: 0.98rem;
+      font-weight: 800;
+      font-family: inherit;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 8px 20px rgba(39, 34, 31, 0.15);
+
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .btn-register-submit:hover:not(:disabled) {
+      transform: translateY(-2px);
+
+      background: #181411;
+
+      box-shadow:
+        0 12px 28px rgba(39, 34, 31, 0.20);
+    }
+
+    .btn-register-submit:disabled {
+      opacity: 0.58;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* =========================================
+       Footer
+       ========================================= */
+
+    .register-footer {
+      margin-top: 22px;
+      text-align: center;
+
+      color: var(--text-muted);
+      font-size: 0.84rem;
+    }
+
+    .register-footer a {
+      color: #b87d4d;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .register-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .security-note {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 7px;
+
+      margin-top: 18px;
+
+      font-size: 0.7rem;
+      color: #948a83;
+    }
+
+    .site-footer {
+      background: #2d2a28;
+      color: #f5f1ed;
+      margin-top: 40px;
+    }
+
+    .footer-inner {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 52px 24px 34px;
+
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 40px;
+    }
+
+    .footer-brand {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .footer-brand span {
+      color: var(--accent);
+    }
+
+    .footer-text {
+      color: #c9c1bb;
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 300px;
+    }
+
+    .footer-column h4 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 14px;
+      color: #ffffff;
+    }
+
+    .footer-column a {
+      display: block;
+      color: #c9c1bb;
+      text-decoration: none;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .footer-column a:hover {
+      color: #ffffff;
+    }
+
+    .footer-bottom {
+      max-width: 1150px;
+      margin: 0 auto;
+
+      padding: 20px 24px 28px;
+
+      border-top:
+        1px solid rgba(255, 255, 255, .12);
+
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+
+      color: #afa7a1;
+      font-size: 12px;
+    }
+
+    .footer-bottom-links {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .footer-bottom a {
+      color: #afa7a1;
+      text-decoration: none;
+    }
+
+    .footer-bottom a:hover {
+      color: #ffffff;
+    }
+
+    /* =========================================
+       Responsive
+       ========================================= */
+
+
+    @media (max-width: 850px) {
+      .footer-inner {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 580px) {
+      .footer-inner {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+
+      .topbar {
+        min-height: 66px;
+      }
+
+      .form-grid-2 {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .form-grid-2 .form-field {
+        margin-bottom: 0;
+      }
+
+      .register-card {
+        border-radius: 18px;
+      }
+
+      .color-picker-wrap {
+        align-items: stretch;
+      }
+
+      .color-text-input {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- I.C added -->
+  <header class="topbar">
+
+    <a href="/" class="brand">
+      Table<span>AI</span>
+    </a>
+
+    <a href="/login.html" class="topbar-login"> Anmelden</a>
+
+  </header>
+
+  <main class="page-shell">
+
+    <div class="register-wrapper">
+
+      <!-- I.C changed -->
+      <div class="register-header">
+
+        <div class="eyebrow">
+          Restaurant Onboarding
+        </div>
+
+        <h1>
+          Bringen Sie Ihr Restaurant
+          <br>
+          mit TableAI online
+        </h1>
+
+        <p>
+           Erstellen Sie Ihr Restaurantkonto,
+          konfigurieren Sie Ihre Reservierungskapazität
+          und verwalten Sie alle Reservierungen zentral an einem Ort.
+        </p>
+      </div>
+
+      <div class="register-card">
+
+        <div class="alert-banner error" id="alert-error"></div>
+
+        <div class="alert-banner success" id="alert-success"></div>
+
+        <form id="register-form">
+
+          <!-- =====================================
+               Restaurant profile
+               ===================================== -->
+
+          <section class="wizard-section">
+
+            <div class="wizard-section-title">
+
+              <span class="section-icon">
+                🏛️
+              </span>
+
+              <span>
+                Restaurantprofil
+              </span>
+
+            </div>
+
+            <div class="form-grid-2">
+
+              <div class="form-field">
+
+                <label for="reg-name">
+                  Restaurantname *
+                </label>
+
+                <input type="text" class="form-input" id="reg-name" placeholder="z. B. Osteria Bella Vista" required>
+
+              </div>
+
+              <div class="form-field">
+
+                <label for="reg-slug">
+                  Restaurant URL
+                </label>
+
+                <input type="text" class="form-input" id="reg-slug" placeholder="z. B. bella-vista" pattern="[a-z0-9-]*"
+                  title="Nur Kleinbuchstaben, Zahlen und Bindestriche sind erlaubt.">
+                <div class="field-help">
+                  Optional. Nur Kleinbuchstaben, Zahlen und Bindestriche.
+                  Wenn das Feld leer bleibt, wird die URL automatisch aus dem Restaurantnamen erstellt.
+                </div>
+
+              </div>
+
+            </div>
+
+            <div class="form-field" style="margin-top: 17px; margin-bottom: 0;">
+
+              <label for="reg-color">
+                Akzentfarbe
+              </label>
+
+              <div class="color-picker-wrap">
+
+                <input type="color" class="color-input" id="reg-color" value="#D4A373">
+
+                <input type="text" class="form-input color-text-input" id="reg-color-text" value="#D4A373">
+
+              </div>
+
+              <div class="field-help">
+               Diese Farbe wird im Reservierungsbereich
+               für Ihre Gäste verwendet.
+              </div>
+
+            </div>
+
+          </section>
+
+          <!-- =====================================
+               Owner
+               ===================================== -->
+
+          <section class="wizard-section">
+
+            <div class="wizard-section-title">
+
+              <span class="section-icon">
+                👤
+              </span>
+
+              <span>
+                Inhaberkonto
+              </span>
+
+            </div>
+
+            <div class="form-field">
+
+              <label for="reg-fullname">
+                Vollständiger Name *
+              </label>
+
+              <input type="text" class="form-input" id="reg-fullname" placeholder="z. B. Marco Rossi" required>
+
+            </div>
+
+            <div class="form-grid-2">
+
+              <div class="form-field">
+
+                <label for="reg-email">
+                  Geschäftliche E-Mail-Adresse *
+                </label>
+
+                <input type="email" class="form-input" id="reg-email" placeholder="inhaber@restaurant.de"
+                  autocomplete="email" required>
+              </div>
+
+
+              <div class="form-field">
+
+                <label for="reg-password">
+                  Passwort *
+                </label>
+
+                <input type="password" class="form-input" id="reg-password" placeholder="Mindestens 8 Zeichen"
+                  minlength="8" autocomplete="new-password" required>
+
+                <div class="field-help">
+                  Mindestens 8 Zeichen, davon mindestens ein Buchstabe und eine Zahl.
+                </div>
+
+              </div>
+
+              <div class="form-field">
+
+                <label for="reg-password-confirm">
+                  Passwort bestätigen *
+                </label>
+
+                <input type="password" class="form-input" id="reg-password-confirm"
+                  placeholder="Passwort erneut eingeben" minlength="8" autocomplete="new-password" required>
+
+              </div>
+
+
+            </div>
+
+
+
+      </div>
+      </section>
+
+      <!-- =====================================
+               Booking configuration
+               ===================================== -->
+
+      <section class="wizard-section">
+
+        <div class="wizard-section-title">
+
+          <span class="section-icon">
+            ⚡
+          </span>
+
+          <span>
+            Reservierungseinstellungen
+          </span>
+
+        </div>
+
+        <div class="form-grid-2">
+
+          <div class="form-field">
+
+            <label for="reg-covers">
+              Maximale Gäste pro Zeitfenster
+            </label>
+
+            <input type="number" class="form-input" id="reg-covers" value="20" min="1" max="200" required>
+
+            <div class="field-help">
+              Maximale Anzahl an Gästen, die innerhalb
+              eines Reservierungsintervalls angenommen werden können.
+            </div>
+
+          </div>
+
+          <div class="form-field">
+
+            <label for="reg-interval">
+              Reservierungsintervall
+            </label>
+
+            <select class="form-input" id="reg-interval">
+              <option value="15">15 Minuten</option>
+              <option value="30" selected>30 Minuten</option>
+              <option value="45">45 Minuten</option>
+              <option value="60">1 Stunde</option>
+              <option value="75">1 Stunde 15 Minuten</option>
+              <option value="90">1 Stunde 30 Minuten</option>
+              <option value="105">1 Stunde 45 Minuten</option>
+              <option value="120">2 Stunden</option>
+              <option value="150">2 Stunden 30 Minuten</option>
+              <option value="180">3 Stunden</option>
+            </select>
+            <div class="field-help">
+              Öffnungszeiten und Schichten können Sie später
+              im Admin-Bereich individuell anpassen.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AGB & Datenschutz -->
+      <div class="legal-consent">
+
+        <label class="checkbox-row">
+
+          <input type="checkbox" id="reg-terms" required>
+
+          <span>
+            Ich akzeptiere die
+            <a href="/agb.html" target="_blank">AGB</a>
+            und habe die
+            <a href="/datenschutz.html" target="_blank">
+              Datenschutzerklärung
+            </a>
+            gelesen. *
+          </span>
+
+        </label>
+
+      </div>
+
+      <button type="submit" class="btn-register-submit" id="btn-submit">
+        Restaurant erstellen & Admin-Bereich öffnen →
+      </button>
+
+      </form>
+
+      <div class="register-footer">
+
+        Sie haben bereits ein Restaurantkonto?
+
+        <a href="/login.html">
+          Anmelden
+        </a>
+
+      </div>
+    </div>
+    </div>
+  </main>
+  <footer class="site-footer">
+
+    <div class="footer-inner">
+
+      <div>
+        <div class="footer-brand">
+          Table<span>AI</span>
+        </div>
+
+        <p class="footer-text">
+          Die intelligente Plattform für Restaurantreservierungen,
+          Gästemanagement und moderne Gastronomie.
+        </p>
+      </div>
+
+      <div class="footer-column">
+        <h4>Gäste</h4>
+
+        <a href="/">Restaurants entdecken</a>
+        <a href="/manage.html">Reservierung verwalten</a>
+      </div>
+
+      <div class="footer-column">
+        <h4>Restaurants</h4>
+
+        <a href="/register.html">Registrieren</a>
+        <a href="/login.html">Anmelden</a>
+      </div>
+
+      <div class="footer-column">
+        <h4>Unternehmen</h4>
+
+        <a href="#">Über uns</a>
+        <a href="#">Kontakt</a>
+        <a href="#">Hilfe</a>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+
+      <div>
+        © 2026 TableAI. Alle Rechte vorbehalten.
+      </div>
+
+      <div class="footer-bottom-links">
+        <a href="#">Impressum</a>
+        <a href="#">Datenschutz</a>
+        <a href="#">AGB</a>
+        <a href="#">Cookie-Einstellungen</a>
+      </div>
+
+    </div>
+
+  </footer>
+  <script>
+
+    const form =
+      document.getElementById(
+        'register-form'
+      );
+
+    const colorPicker =
+      document.getElementById(
+        'reg-color'
+      );
+
+    const colorText =
+      document.getElementById(
+        'reg-color-text'
+      );
+
+    const alertError =
+      document.getElementById(
+        'alert-error'
+      );
+
+    const alertSuccess =
+      document.getElementById(
+        'alert-success'
+      );
+
+    const btnSubmit =
+      document.getElementById(
+        'btn-submit'
+      );
+
+    colorPicker.addEventListener(
+      'input',
+      (e) => {
+
+        colorText.value =
+          e.target.value.toUpperCase();
+
+        // I.C added
+        document.documentElement.style
+          .setProperty(
+            '--accent',
+            e.target.value
+          );
+
+      }
+    );
+
+    colorText.addEventListener(
+      'input',
+      (e) => {
+
+        const value =
+          e.target.value.trim();
+
+        if (
+          /^#[0-9A-F]{6}$/i.test(
+            value
+          )
+        ) {
+
+          colorPicker.value =
+            value;
+
+          // I.C added
+          document.documentElement.style
+            .setProperty(
+              '--accent',
+              value
+            );
+
+        }
+
+      }
+    );
+
+    form.addEventListener(
+      'submit',
+      async (e) => {
+
+        e.preventDefault();
+
+        alertError.style.display =
+          'none';
+
+        alertSuccess.style.display =
+          'none';
+
+
+        const slugInput =
+          document.getElementById('reg-slug');
+
+        slugInput.value =
+          slugInput.value
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9-]/g, '')
+            .replace(/-+/g, '-');
+
+        const payload = {
+
+          restaurant_name:
+            document
+              .getElementById(
+                'reg-name'
+              )
+              .value
+              .trim(),
+
+          slug:
+            document
+              .getElementById(
+                'reg-slug'
+              )
+              .value
+              .trim(),
+
+          primary_color:
+            colorPicker.value,
+
+          full_name:
+            document
+              .getElementById(
+                'reg-fullname'
+              )
+              .value
+              .trim(),
+
+          email:
+            document
+              .getElementById(
+                'reg-email'
+              )
+              .value
+              .trim(),
+
+          password:
+            document
+              .getElementById(
+                'reg-password'
+              )
+              .value,
+
+          max_covers_per_slot:
+            parseInt(
+              document
+                .getElementById(
+                  'reg-covers'
+                )
+                .value,
+              10
+            ),
+
+          slot_interval_minutes:
+            parseInt(
+              document
+                .getElementById(
+                  'reg-interval'
+                )
+                .value,
+              10
+            )
+
+        };
+
+        const passwordConfirm =
+          document
+            .getElementById('reg-password-confirm')
+            .value;
+
+
+        if (
+          !payload.restaurant_name ||
+          !payload.full_name ||
+          !payload.email ||
+          !payload.password
+        ) {
+
+          alertError.textContent =
+            'Bitte füllen Sie alle Pflichtfelder aus.';
+
+          alertError.style.display =
+            'block';
+
+          return;
+        }
+
+        /* Password validation */
+        const passwordValid =
+          payload.password.length >= 8 &&
+          /[A-Za-z]/.test(payload.password) &&
+          /\d/.test(payload.password);
+
+        if (!passwordValid) {
+
+          alertError.textContent =
+            'Das Passwort muss mindestens 8 Zeichen lang sein und mindestens einen Buchstaben sowie eine Zahl enthalten.';
+
+          alertError.style.display =
+            'block';
+
+          return;
+        }
+
+        if (payload.password !== passwordConfirm) {
+
+          alertError.textContent =
+            'Die Passwörter stimmen nicht überein.';
+
+          alertError.style.display =
+            'block';
+
+          return;
+        }
+
+        /* AGB & Datenschutz validation */
+        const termsAccepted =
+          document.getElementById(
+            'reg-terms'
+          ).checked;
+
+        if (!termsAccepted) {
+
+          alertError.textContent =
+            'Bitte akzeptieren Sie die AGB und die Datenschutzerklärung.';
+
+          alertError.style.display =
+            'block';
+
+          return;
+        }
+
+
+        btnSubmit.disabled =
+          true;
+
+        btnSubmit.textContent =
+          'Ihr Restaurant wird eingerichtet...';
+
+        try {
+
+          const res =
+            await fetch(
+              '/api/auth/register',
+              {
+
+                method: 'POST',
+
+                headers: {
+                  'Content-Type':
+                    'application/json'
+                },
+
+                body:
+                  JSON.stringify(
+                    payload
+                  )
+
+              }
+            );
+
+          const data =
+            await res.json();
+
+          if (
+            !res.ok ||
+            !data.success
+          ) {
+
+            throw new Error(
+              data?.error?.message ||
+              'Die Registrierung ist fehlgeschlagen. Bitte versuchen Sie es erneut.'
+            );
+
+          }
+alertSuccess.textContent =
+  'Ihr Restaurantkonto wurde erfolgreich erstellt. Bitte prüfen Sie Ihr E-Mail-Postfach und bestätigen Sie Ihre E-Mail-Adresse, bevor Sie sich anmelden.';
+
+alertSuccess.style.display =
+  'block';
+
+form.reset();
+
+colorPicker.value =
+  '#D4A373';
+
+colorText.value =
+  '#D4A373';
+
+btnSubmit.disabled =
+  false;
+
+btnSubmit.textContent =
+  'Restaurant erstellen';
+
+        } catch (err) {
+
+          alertError.textContent =
+            err.message ||
+            'Es ist ein Netzwerkfehler aufgetreten.';
+
+          alertError.style.display =
+            'block';
+
+          btnSubmit.disabled =
+            false;
+
+          btnSubmit.textContent =
+            'Restaurant erstellen & Admin-Bereich öffnen →';
+
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+
+</html>

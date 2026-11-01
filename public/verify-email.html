@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>E-Mail-Adresse bestätigen | TableAI</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    :root {
+      --page-bg: #F3EFEA;
+      --card-bg: #FFFFFF;
+      --text-main: #292522;
+      --text-muted: #746A63;
+      --accent: #D4A373;
+      --accent-hover: #C9925F;
+      --border: #DDD3CA;
+      --danger: #A63E3E;
+      --success: #357A42;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-family:
+        "Plus Jakarta Sans",
+        system-ui,
+        sans-serif;
+
+      background: var(--page-bg);
+      color: var(--text-main);
+    }
+
+    .page {
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 38px;
+
+      box-shadow:
+        0 22px 50px rgba(75, 55, 42, 0.10);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .badge {
+      display: inline-flex;
+      padding: 7px 15px;
+
+      border-radius: 999px;
+
+      background: #F8EFE7;
+      border: 1px solid #E7CDB4;
+
+      color: var(--accent);
+
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    h1 {
+      margin: 18px 0 10px;
+
+      font-size: 1.8rem;
+      letter-spacing: -0.04em;
+    }
+
+    .header p {
+      margin: 0;
+
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .status-box {
+      padding: 16px;
+      border-radius: 10px;
+      margin-top: 20px;
+
+      font-size: 0.9rem;
+      line-height: 1.6;
+
+      display: none;
+    }
+
+    .status-box.success {
+      background: rgba(53, 122, 66, 0.08);
+      color: var(--success);
+      border: 1px solid rgba(53, 122, 66, 0.18);
+    }
+
+    .status-box.error {
+      background: rgba(166, 62, 62, 0.08);
+      color: var(--danger);
+      border: 1px solid rgba(166, 62, 62, 0.18);
+    }
+
+    .loader {
+      margin: 26px auto 10px;
+
+      width: 34px;
+      height: 34px;
+
+      border: 3px solid #E8DED5;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .actions {
+      margin-top: 24px;
+      display: none;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 100%;
+
+      padding: 14px 20px;
+
+      border: none;
+      border-radius: 9px;
+
+      background: var(--accent);
+      color: var(--text-main);
+
+      text-decoration: none;
+
+      font: inherit;
+      font-weight: 800;
+
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <div class="card">
+
+      <div class="header">
+
+        <div class="badge">
+          E-Mail-Bestätigung
+        </div>
+
+        <h1>
+          E-Mail-Adresse bestätigen
+        </h1>
+
+        <p id="verify-description">
+          Ihre E-Mail-Adresse wird überprüft.
+          Bitte warten Sie einen Moment.
+        </p>
+
+      </div>
+
+      <div
+        class="loader"
+        id="verify-loader"
+      ></div>
+
+      <div
+        class="status-box success"
+        id="verify-success"
+      ></div>
+
+      <div
+        class="status-box error"
+        id="verify-error"
+      ></div>
+
+      <div
+        class="actions"
+        id="verify-actions"
+      >
+        <a
+          href="/login.html"
+          class="btn"
+        >
+          Zur Anmeldung
+        </a>
+      </div>
+
+      <div class="footer">
+        <a href="/login.html">
+          ← Zurück zur Anmeldung
+        </a>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    const loader =
+      document.getElementById(
+        'verify-loader'
+      );
+
+    const successBox =
+      document.getElementById(
+        'verify-success'
+      );
+
+    const errorBox =
+      document.getElementById(
+        'verify-error'
+      );
+
+    const actions =
+      document.getElementById(
+        'verify-actions'
+      );
+
+    const description =
+      document.getElementById(
+        'verify-description'
+      );
+
+
+    async function verifyEmail() {
+
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+      const token =
+        params.get('token');
+
+
+      if (!token) {
+
+        loader.style.display =
+          'none';
+
+        errorBox.textContent =
+          'Der Bestätigungslink ist ungültig.';
+
+        errorBox.style.display =
+          'block';
+
+        description.textContent =
+          'Die E-Mail-Adresse konnte nicht bestätigt werden.';
+
+        return;
+      }
+
+
+      try {
+
+        const response =
+          await fetch(
+            `/api/auth/verify-email?token=${encodeURIComponent(
+              token
+            )}`
+          );
+
+        const data =
+          await response.json();
+
+
+        loader.style.display =
+          'none';
+
+
+        if (
+          !response.ok ||
+          !data.success
+        ) {
+
+          throw new Error(
+            data?.error?.message ||
+            'Die E-Mail-Adresse konnte nicht bestätigt werden.'
+          );
+
+        }
+
+
+        successBox.textContent =
+          data.message ||
+          'Ihre E-Mail-Adresse wurde erfolgreich bestätigt.';
+
+        successBox.style.display =
+          'block';
+
+        actions.style.display =
+          'block';
+
+        description.textContent =
+          'Die Bestätigung wurde erfolgreich abgeschlossen.';
+
+
+      } catch (error) {
+
+        loader.style.display =
+          'none';
+
+        errorBox.textContent =
+          error.message ||
+          'Bei der E-Mail-Bestätigung ist ein Fehler aufgetreten.';
+
+        errorBox.style.display =
+          'block';
+
+        description.textContent =
+          'Die E-Mail-Adresse konnte nicht bestätigt werden.';
+
+      }
+
+    }
+
+
+    verifyEmail();
+  </script>
+
+</body>
+</html>

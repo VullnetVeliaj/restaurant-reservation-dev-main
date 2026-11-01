@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/admin.html"
+    },
+    {
+      "source": "/dashboard/:path*",
+      "destination": "/admin.html"
+    },
+    {
+      "source": "/book/:slug",
+      "destination": "/booking.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/public/$1"
+    }
+  ]
+}

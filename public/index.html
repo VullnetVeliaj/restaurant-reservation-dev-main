@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>TableAI – Restaurantreservierungen</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #f7f3ef;
+      color: #282421;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 7%;
+      background: #ffffff;
+      border-bottom: 1px solid #eee7e1;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .brand span {
+      color: #d4a373;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .topbar-link {
+      color: #554d47;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    .topbar-link:hover {
+      color: #d4a373;
+    }
+
+    .topbar-link.primary {
+      background: #282421;
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: 9px;
+    }
+
+    .topbar-link.primary:hover {
+      background: #423b36;
+      color: #ffffff;
+    }
+
+    /* HERO */
+
+    .hero {
+      text-align: center;
+      padding: 70px 20px 45px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: #f4e8dc;
+      color: #b47c49;
+      padding: 8px 17px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(36px, 5vw, 58px);
+      line-height: 1.08;
+      max-width: 800px;
+      margin: auto;
+      letter-spacing: -2px;
+    }
+
+    .hero p {
+      margin: 18px auto 0;
+      max-width: 650px;
+      color: #766c65;
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    /* SEARCH */
+
+    .search-container {
+      max-width: 850px;
+      margin: 35px auto 0;
+      background: white;
+      border: 1px solid #e3dad3;
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      box-shadow: 0 12px 30px rgba(70, 55, 45, 0.08);
+    }
+
+    .search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: 15px;
+      padding: 12px 15px;
+      color: #282421;
+      background: transparent;
+    }
+
+    .search-btn {
+      border: none;
+      background: #282421;
+      color: white;
+      border-radius: 9px;
+      padding: 12px 22px;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .search-btn:hover {
+      background: #423b36;
+    }
+
+    /* RESTAURANTS */
+
+    .restaurants-section {
+      max-width: 1150px;
+      margin: 50px auto;
+      padding: 0 24px 80px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .section-header h2 {
+      font-size: 27px;
+      letter-spacing: -0.8px;
+    }
+
+    .section-header p {
+      color: #82776f;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .restaurant-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .restaurant-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: white;
+      border-radius: 16px;
+      border: 1px solid #e3dad3;
+      overflow: hidden;
+      box-shadow: 0 5px 20px rgba(60, 45, 35, 0.06);
+      transition: transform .22s ease, box-shadow .22s ease;
+    }
+
+    .restaurant-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 14px 32px rgba(60, 45, 35, 0.12);
+    }
+
+    .restaurant-image {
+      position: relative;
+      height: 205px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    /* Uploaded cover photo fills the media area */
+    .restaurant-image img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* No photo: neutral gradient with the restaurant name */
+    .restaurant-image-placeholder {
+      padding: 0 20px;
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -.3px;
+      text-align: center;
+      line-height: 1.25;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.18);
+      overflow-wrap: anywhere;
+    }
+
+    .restaurant-content {
+      padding: 18px;
+    }
+
+    .restaurant-type {
+      color: #b47c49;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    .restaurant-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 7px;
+      letter-spacing: -.4px;
+    }
+
+    .restaurant-description {
+      color: #786e67;
+      font-size: 13px;
+      line-height: 1.55;
+      min-height: 42px;
+    }
+
+    /* FOOTER */
+
+    .site-footer {
+      background: #2d2a28;
+      color: #f5f1ed;
+      margin-top: 40px;
+    }
+
+    .footer-inner {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 52px 24px 34px;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 40px;
+    }
+
+    .footer-brand {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .footer-brand span {
+      color: #d4a373;
+    }
+
+    .footer-text {
+      color: #c9c1bb;
+      font-size: 14px;
+      line-height: 1.6;
+      max-width: 300px;
+    }
+
+    .footer-column h4 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 14px;
+      color: #ffffff;
+    }
+
+    .footer-column a {
+      display: block;
+      color: #c9c1bb;
+      text-decoration: none;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .footer-column a:hover {
+      color: #ffffff;
+    }
+
+    .footer-bottom {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 20px 24px 28px;
+      border-top: 1px solid rgba(255,255,255,.12);
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      color: #aFA7a1;
+      font-size: 12px;
+    }
+
+    .footer-bottom-links {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .footer-bottom a {
+      color: #aFA7a1;
+      text-decoration: none;
+    }
+
+    .footer-bottom a:hover {
+      color: #ffffff;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 850px) {
+      .restaurant-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .footer-inner {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 680px) {
+      .topbar {
+        align-items: flex-start;
+        gap: 18px;
+        flex-direction: column;
+      }
+
+      .topbar-actions {
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+    }
+
+    @media (max-width: 580px) {
+      .hero {
+        padding-top: 45px;
+      }
+
+      .restaurant-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .search-container {
+        margin-left: 0;
+        margin-right: 0;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    Table<span>AI</span>
+  </div>
+
+  <nav class="topbar-actions">
+    <a href="/register.html" class="topbar-link primary">
+      Registrieren
+    </a>
+
+    <a href="/login.html" class="topbar-link">
+      Anmelden
+    </a>
+
+    <a href="/manage.html" class="topbar-link">
+      Reservierung verwalten
+    </a>
+  </nav>
+</header>
+
+<section class="hero">
+
+  <div class="hero-badge">
+    Smarte Restaurantreservierungen
+  </div>
+
+  <h1>
+    Finden Sie Ihren nächsten Tisch
+  </h1>
+
+  <p>
+
+  Entdecken Sie Restaurants und reservieren Sie Ihren Tisch
+  in wenigen Sekunden mit intelligenter Echtzeit-Verfügbarkeit.
+
+</p>
+
+  <div class="search-container">
+    <input
+      id="restaurant-search"
+      class="search-input"
+      type="text"
+      placeholder="Restaurant oder Küche suchen..."
+    >
+
+    <button
+      class="search-btn"
+      id="search-button"
+    >
+      Suchen
+    </button>
+  </div>
+
+</section>
+
+<section class="restaurants-section">
+
+  <div class="section-header">
+    <div>
+      <h2>Restaurants</h2>
+
+      <p>
+  Wählen Sie ein Restaurant und sehen Sie sich verfügbare Tische an
+</p>
+    </div>
+  </div>
+
+  <div
+    class="restaurant-grid"
+    id="restaurant-grid"
+  >
+    <div
+      id="restaurants-loading"
+      style="
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 40px;
+        color: #82776f;
+      "
+    >
+      Restaurants werden geladen...
+    </div>
+  </div>
+
+</section>
+
+<footer class="site-footer">
+
+  <div class="footer-inner">
+
+    <div>
+      <div class="footer-brand">
+        Table<span>AI</span>
+      </div>
+
+      <p class="footer-text">
+        Die intelligente Plattform für Restaurantreservierungen,
+        Gästemanagement und moderne Gastronomie.
+      </p>
+    </div>
+
+    <div class="footer-column">
+      <h4>Gäste</h4>
+
+      <a href="/">Restaurants entdecken</a>
+      <a href="/manage.html">Reservierung verwalten</a>
+    </div>
+
+    <div class="footer-column">
+      <h4>Restaurants</h4>
+
+      <a href="/register.html">Restaurant registrieren</a>
+      <a href="/login.html">Restaurant Login</a>
+    </div>
+
+    <div class="footer-column">
+      <h4>Unternehmen</h4>
+
+      <a href="#">Über uns</a>
+      <a href="#">Kontakt</a>
+      <a href="#">Hilfe</a>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+
+    <div>
+      © 2026 TableAI. Alle Rechte vorbehalten.
+    </div>
+
+    <div class="footer-bottom-links">
+      <a href="#">Impressum</a>
+      <a href="#">Datenschutz</a>
+      <a href="#">AGB</a>
+      <a href="#">Cookie-Einstellungen</a>
+    </div>
+
+  </div>
+
+</footer>
+
+<script>
+
+  const searchInput =
+    document.getElementById(
+      'restaurant-search'
+    );
+
+  const searchButton =
+    document.getElementById(
+      'search-button'
+    );
+
+  const restaurantGrid =
+    document.getElementById(
+      'restaurant-grid'
+    );
+
+  let restaurants = [];
+
+  function escapeHtml(text) {
+    const div =
+      document.createElement('div');
+
+    div.textContent =
+      text || '';
+
+    return div.innerHTML;
+  }
+
+  function getRestaurantVisual(
+    restaurant,
+    index
+  ) {
+    const gradients = [
+      ['#d8b596', '#8c6a50'],
+      ['#bdd7c1', '#496c55'],
+      ['#e6ac8d', '#955541'],
+      ['#d9c19f', '#927251'],
+      ['#c7aaa4', '#75534e'],
+      ['#b9ccb1', '#617258'],
+      ['#c7a18d', '#755344'],
+      ['#e1b190', '#a3694d']
+    ];
+
+    const gradient =
+      gradients[index % gradients.length];
+
+    // Only https URLs from the public API are used as images
+    const coverUrl =
+      typeof restaurant.cover_image_url === 'string' &&
+      /^https:\/\//i.test(restaurant.cover_image_url)
+        ? restaurant.cover_image_url
+        : null;
+
+    return {
+      coverUrl,
+      background:
+        `linear-gradient(135deg, ${gradient[0]}, ${gradient[1]})`
+    };
+  }
+
+  function renderRestaurants(
+    list
+  ) {
+    if (!list.length) {
+      restaurantGrid.innerHTML = `
+        <div
+          style="
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px 20px;
+            color: #82776f;
+          "
+        >
+          Keine Restaurants gefunden.
+        </div>
+      `;
+
+      return;
+    }
+
+    restaurantGrid.innerHTML =
+      list.map(
+        (restaurant, index) => {
+
+          const visual =
+            getRestaurantVisual(
+              restaurant,
+              index
+            );
+
+          const safeName =
+            escapeHtml(
+              restaurant.name ||
+              'Restaurant'
+            );
+
+          const safeId =
+            encodeURIComponent(
+              restaurant.id
+            );
+
+          return `
+            <a
+              class="restaurant-card"
+              data-search="${escapeHtml(
+                (
+                  restaurant.name +
+                  ' ' +
+                  (restaurant.slug || '')
+                ).toLowerCase()
+              )}"
+              href="/booking.html?restaurant=${safeId}"
+            >
+
+              <div
+                class="restaurant-image"
+                style="
+                  background:
+                    ${visual.background};
+                "
+              >
+                ${
+                  visual.coverUrl
+                    ? `<img src="${escapeHtml(visual.coverUrl).replace(/"/g, '%22')}" alt="${safeName.replace(/"/g, '&quot;')}" loading="lazy" />`
+                    : `<span class="restaurant-image-placeholder">${safeName}</span>`
+                }
+              </div>
+
+              <div
+                class="restaurant-content"
+              >
+
+                <div
+                  class="restaurant-type"
+                >
+                  Restaurant
+                </div>
+
+                <div
+                  class="restaurant-name"
+                >
+                  ${safeName}
+                </div>
+
+                <div
+                  class="restaurant-description"
+                >
+                  Echtzeit-Verfügbarkeit prüfen
+                  und direkt einen Tisch reservieren.
+                </div>
+
+              </div>
+
+            </a>
+          `;
+        }
+      ).join('');
+  }
+
+  async function loadRestaurants() {
+    try {
+      const res =
+        await fetch(
+          '/api/restaurants'
+        );
+
+      const data =
+        await res.json();
+
+      if (
+        !res.ok ||
+        !data.success
+      ) {
+        throw new Error(
+          data?.error?.message ||
+          'Restaurants konnten nicht geladen werden.'
+        );
+      }
+
+      restaurants =
+        data.restaurants || [];
+
+      renderRestaurants(
+        restaurants
+      );
+
+    } catch (error) {
+      console.error(
+        '[Homepage Restaurants]',
+        error
+      );
+
+      restaurantGrid.innerHTML = `
+        <div
+          style="
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px 20px;
+            color: #a65d4e;
+          "
+        >
+          Restaurants konnten nicht geladen werden.
+        </div>
+      `;
+    }
+  }
+
+  function filterRestaurants() {
+    const value =
+      searchInput.value
+        .toLowerCase()
+        .trim();
+
+    if (!value) {
+      renderRestaurants(
+        restaurants
+      );
+
+      return;
+    }
+
+    const filtered =
+      restaurants.filter(
+        restaurant => {
+
+          const searchable =
+            [
+              restaurant.name,
+              restaurant.slug,
+              restaurant.id
+            ]
+              .filter(Boolean)
+              .join(' ')
+              .toLowerCase();
+
+          return searchable.includes(
+            value
+          );
+        }
+      );
+
+    renderRestaurants(
+      filtered
+    );
+  }
+
+  searchInput.addEventListener(
+    'input',
+    filterRestaurants
+  );
+
+  searchButton.addEventListener(
+    'click',
+    filterRestaurants
+  );
+
+  document.addEventListener(
+    'DOMContentLoaded',
+    loadRestaurants
+  );
+
+</script>
+
+</body>
+</html>

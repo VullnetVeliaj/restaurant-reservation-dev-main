@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Your Reservation - Restaurant Reservation</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .manage-container {
+      max-width: 680px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--accent-hover);
+      text-decoration: underline;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-top: 1rem;
+    }
+
+    .search-input {
+
+  flex: 1;
+
+  background-color: #181514;
+
+  border: 1px solid var(--border-color);
+
+  border-radius: 8px;
+
+  padding: 12px 14px;
+
+  color: var(--text-main);
+
+  font-family: ui-monospace, monospace;
+
+  font-size: 0.95rem;
+
+  outline: none;
+
+  transition: all 0.2s;
+
+}
+
+.search-input:focus {
+
+  border-color: var(--accent);
+
+  box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.22);
+
+}
+
+   .btn-primary {
+
+  background: var(--accent);
+
+  color: #292522;
+
+  border: none;
+
+  border-radius: 8px;
+
+  padding: 12px 20px;
+
+  font-weight: 700;
+
+  font-size: 0.9rem;
+
+  cursor: pointer;
+
+  transition: all 0.2s;
+
+  box-shadow: 0 4px 12px rgba(212, 163, 115, 0.22);
+
+}
+
+.btn-primary:hover {
+
+  background: var(--accent-hover);
+
+  transform: translateY(-1px);
+
+}
+    .btn-danger {
+      background: linear-gradient(135deg, #dc2626, #ef4444);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 22px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #ef4444, #f87171);
+      transform: translateY(-1px);
+    }
+
+    .alert-banner {
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      display: none;
+      margin-bottom: 1rem;
+    }
+
+    .alert-banner.success {
+      background-color: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #4ade80;
+    }
+
+    .alert-banner.error {
+      background-color: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .status-badge {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .badge-PENDING {
+      background-color: rgba(234, 179, 8, 0.2);
+      color: #fde047;
+      border: 1px solid rgba(234, 179, 8, 0.4);
+    }
+
+    .badge-CONFIRMED {
+      background-color: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+
+    .badge-DECLINED {
+      background-color: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .detail-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .detail-value {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-main);
+      word-break: break-word;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      max-width: 440px;
+      width: 100%;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .detail-item {
+
+  background: #231F1D;
+
+  border: 1px solid var(--border-color);
+
+  border-radius: 8px;
+
+  padding: 12px 14px;
+
+}
+
+.btn-secondary {
+
+  background: #38322E;
+
+  color: #FFFFFF;
+
+  border: 1px solid var(--border-color);
+
+  border-radius: 8px;
+
+  padding: 10px 18px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s;
+
+}
+
+.btn-secondary:hover {
+
+  background: #47403B;
+}
+/* =========================================
+   MANAGE PAGE THEME SWITCHER
+   ========================================= */
+
+.theme-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.theme-select {
+  background: #181514;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+}
+
+
+/* =========================================
+   LIGHT THEME
+   ========================================= */
+
+body.manage-light-theme {
+  background: #F5F0EB !important;
+  color: #292522 !important;
+
+  --bg-color: #F5F0EB;
+  --card-bg: #FFFFFF;
+  --card-hover: #F8F4F0;
+  --border-color: #DDD3CA;
+
+  --text-main: #292522;
+  --text-muted: #71675F;
+
+  --accent: #D4A373;
+  --accent-hover: #C9925F;
+}
+
+body.manage-light-theme .card,
+body.manage-light-theme .modal-content {
+  background: #FFFFFF !important;
+  border-color: #DDD3CA !important;
+  box-shadow: 0 8px 26px rgba(70, 55, 45, 0.08);
+}
+
+body.manage-light-theme .header h1,
+body.manage-light-theme .card h2,
+body.manage-light-theme .modal-content h3 {
+  color: #292522 !important;
+  -webkit-text-fill-color: #292522 !important;
+}
+
+body.manage-light-theme .subtitle,
+body.manage-light-theme .card p,
+body.manage-light-theme .detail-label,
+body.manage-light-theme .footer {
+  color: #71675F !important;
+}
+
+body.manage-light-theme .search-input {
+  background: #FFFFFF !important;
+  color: #292522 !important;
+  border-color: #D8CEC5 !important;
+}
+
+body.manage-light-theme .search-input::placeholder {
+  color: #9A8E84 !important;
+}
+
+body.manage-light-theme .search-input:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.18) !important;
+}
+
+body.manage-light-theme .detail-item {
+  background: #FAF7F4 !important;
+  border-color: #E2D9D1 !important;
+}
+
+body.manage-light-theme .detail-value {
+  color: #292522 !important;
+}
+
+body.manage-light-theme #display-notes {
+  color: #554D47 !important;
+}
+
+body.manage-light-theme .theme-select {
+  background: #FFFFFF !important;
+  color: #292522 !important;
+  border-color: #D8CEC5 !important;
+}
+
+body.manage-light-theme .btn-secondary {
+  background: #F4EFEB;
+  color: #554D47;
+  border: 1px solid #D8CEC5;
+}
+
+body.manage-light-theme .btn-secondary:hover {
+  background: #EDE6E0;
+}
+
+body.manage-light-theme .nav-link {
+  color: #B97F49;
+}
+
+body.manage-light-theme .modal-overlay {
+  background: rgba(35, 30, 27, 0.45);
+}
+
+
+
+</style>
+</head>
+<body>
+  <div class="manage-container">
+    <nav class="nav-bar">
+  <a href="/" class="nav-link">&larr; Back to Booking Page</a>
+
+  <div style="display:flex; align-items:center; gap:18px;">
+    <div class="theme-toolbar">
+      <span class="theme-label">Theme:</span>
+
+      <select id="manage-theme-selector" class="theme-select">
+        <option value="dark">🌙 Dark</option>
+        <option value="light">☀️ Light</option>
+      </select>
+    </div>
+
+    <a href="/admin.html" class="nav-link">
+      Restaurant Staff Portal &rarr;
+    </a>
+  </div>
+</nav>
+
+    <header class="header">
+      <div class="badge">Client Portal</div>
+      <h1>Manage Your Reservation</h1>
+      <p class="subtitle">Look up, view appointment metrics, or cancel your booking</p>
+    </header>
+
+    <!-- Alerts -->
+    <div class="alert-banner success" id="alert-success"></div>
+    <div class="alert-banner error" id="alert-error"></div>
+
+    <!-- Lookup Form -->
+    <section class="card">
+      <h2>Lookup Reservation</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">
+        Enter your unique UUID string received upon booking or in your confirmation email.
+      </p>
+      <form id="lookup-form" class="search-box">
+        <input 
+          type="text" 
+          class="search-input" 
+          id="lookup-id" 
+          placeholder="Paste UUID (e.g. 550e8400-e29b-41d4-a716-446655440000)" 
+          required 
+        />
+        <button type="submit" class="btn-primary" id="btn-search">Lookup</button>
+      </form>
+    </section>
+
+    <!-- Reservation Result Display -->
+    <section class="card" id="result-card" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+        <div>
+          <h2 style="margin: 0; font-size: 1.3rem;">Reservation Details</h2>
+          <span style="font-family: ui-monospace, monospace; font-size: 0.8rem; color: var(--accent);" id="display-uuid"></span>
+        </div>
+        <span class="status-badge" id="display-status">PENDING</span>
+      </div>
+
+      <div class="details-grid">
+        <div class="detail-item">
+          <div class="detail-label">Guest Name</div>
+          <div class="detail-value" id="display-name">-</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Party Size</div>
+          <div class="detail-value" id="display-party">-</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Reservation Date</div>
+          <div class="detail-value" id="display-date">-</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Reservation Time</div>
+          <div class="detail-value" id="display-time">-</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Contact Email</div>
+          <div class="detail-value" id="display-email">-</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Contact Phone</div>
+          <div class="detail-value" id="display-phone">-</div>
+        </div>
+      </div>
+
+      <div class="detail-item" style="margin-bottom: 20px;">
+        <div class="detail-label">Special Requests / Notes</div>
+        <div class="detail-value" style="font-size: 0.9rem; font-weight: 400; color: #cbd5e1;" id="display-notes">None</div>
+      </div>
+
+      <!-- Action Panel -->
+      <div id="cancel-action-panel" style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+        <button type="button" class="btn-danger" id="btn-open-cancel">
+          Cancel Reservation
+        </button>
+      </div>
+
+      <div id="cancelled-notice" style="display: none; text-align: center; padding: 10px; color: #f87171; font-size: 0.9rem;">
+        This reservation has been cancelled.
+      </div>
+    </section>
+
+    <!-- Confirmation Modal for Cancellation -->
+    <div class="modal-overlay" id="cancel-modal">
+      <div class="modal-content">
+        <h3 style="color: #f87171; margin-bottom: 8px;">Cancel Reservation?</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted);">
+          Are you sure you want to cancel your reservation? This action cannot be undone and your table will be released.
+        </p>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="btn-close-modal">Keep Reservation</button>
+          <button type="button" class="btn-danger" id="btn-confirm-cancel">Yes, Cancel Reservation</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <p>Restaurant Reservation Platform </p>
+    </footer>
+  </div>
+
+  <script>
+    let currentReservation = null;
+const manageThemeSelector =
+  document.getElementById('manage-theme-selector');
+
+function applyManageTheme(theme) {
+  const finalTheme =
+    theme === 'light'
+      ? 'light'
+      : 'dark';
+
+  document.body.classList.toggle(
+    'manage-light-theme',
+    finalTheme === 'light'
+  );
+
+  if (manageThemeSelector) {
+    manageThemeSelector.value =
+      finalTheme;
+  }
+
+  localStorage.setItem(
+    'manage_theme',
+    finalTheme
+  );
+}
+
+function initializeManageTheme() {
+  const savedTheme =
+    localStorage.getItem('manage_theme') ||
+    localStorage.getItem('admin_theme') ||
+    'dark';
+
+  applyManageTheme(savedTheme);
+}
+
+if (manageThemeSelector) {
+  manageThemeSelector.addEventListener(
+    'change',
+    (event) => {
+      applyManageTheme(event.target.value);
+    }
+  );
+}
+    const alertSuccess = document.getElementById('alert-success');
+    const alertError = document.getElementById('alert-error');
+    const lookupForm = document.getElementById('lookup-form');
+    const lookupInput = document.getElementById('lookup-id');
+    const btnSearch = document.getElementById('btn-search');
+    const resultCard = document.getElementById('result-card');
+
+    const displayUuid = document.getElementById('display-uuid');
+    const displayStatus = document.getElementById('display-status');
+    const displayName = document.getElementById('display-name');
+    const displayParty = document.getElementById('display-party');
+    const displayDate = document.getElementById('display-date');
+    const displayTime = document.getElementById('display-time');
+    const displayEmail = document.getElementById('display-email');
+    const displayPhone = document.getElementById('display-phone');
+    const displayNotes = document.getElementById('display-notes');
+
+    const cancelActionPanel = document.getElementById('cancel-action-panel');
+    const cancelledNotice = document.getElementById('cancelled-notice');
+    const btnOpenCancel = document.getElementById('btn-open-cancel');
+    const cancelModal = document.getElementById('cancel-modal');
+    const btnCloseModal = document.getElementById('btn-close-modal');
+    const btnConfirmCancel = document.getElementById('btn-confirm-cancel');
+
+    function showAlert(type, message) {
+      alertSuccess.style.display = 'none';
+      alertError.style.display = 'none';
+
+      if (type === 'success') {
+        alertSuccess.textContent = message;
+        alertSuccess.style.display = 'block';
+      } else {
+        alertError.textContent = message;
+        alertError.style.display = 'block';
+      }
+    }
+
+    function clearAlerts() {
+      alertSuccess.style.display = 'none';
+      alertError.style.display = 'none';
+    }
+
+    // Lookup function
+    async function fetchReservation(id) {
+      if (!id) return;
+      clearAlerts();
+      btnSearch.disabled = true;
+      btnSearch.textContent = 'Searching...';
+
+      try {
+        const res = await fetch(`/api/reservations/${encodeURIComponent(id)}`);
+        const result = await res.json();
+
+        if (!res.ok || !result.success || !result.data) {
+          throw new Error(result?.error?.message || `Reservation with ID '${id}' was not found.`);
+        }
+
+        currentReservation = result.data;
+        renderReservation(currentReservation);
+        resultCard.style.display = 'block';
+      } catch (err) {
+        console.error('[Client Management] Fetch error:', err);
+        resultCard.style.display = 'none';
+        showAlert('error', err.message || 'Unable to retrieve reservation details.');
+      } finally {
+        btnSearch.disabled = false;
+        btnSearch.textContent = 'Lookup';
+      }
+    }
+
+    function renderReservation(res) {
+      displayUuid.textContent = res.id;
+      displayName.textContent = res.customer_name || 'N/A';
+      displayParty.textContent = `${res.party_size || 1} guest(s)`;
+      displayDate.textContent = res.reservation_date || 'N/A';
+      displayTime.textContent = res.reservation_time || 'N/A';
+      displayEmail.textContent = res.customer_email || 'None provided';
+      displayPhone.textContent = res.customer_phone || 'None provided';
+      displayNotes.textContent = res.special_requests || 'No special requests.';
+
+      const status = (res.status || 'PENDING').toUpperCase();
+      displayStatus.textContent = status;
+      displayStatus.className = `status-badge badge-${status}`;
+
+      if (status === 'PENDING' || status === 'CONFIRMED') {
+        cancelActionPanel.style.display = 'flex';
+        cancelledNotice.style.display = 'none';
+      } else {
+        cancelActionPanel.style.display = 'none';
+        cancelledNotice.style.display = 'block';
+      }
+    }
+
+    // Event Listeners
+    lookupForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = lookupInput.value.trim();
+      if (id) {
+        fetchReservation(id);
+      }
+    });
+
+    btnOpenCancel.addEventListener('click', () => {
+      cancelModal.style.display = 'flex';
+    });
+
+    btnCloseModal.addEventListener('click', () => {
+      cancelModal.style.display = 'none';
+    });
+
+    cancelModal.addEventListener('click', (e) => {
+      if (e.target === cancelModal) {
+        cancelModal.style.display = 'none';
+      }
+    });
+
+    btnConfirmCancel.addEventListener('click', async () => {
+      if (!currentReservation || !currentReservation.id) return;
+
+      btnConfirmCancel.disabled = true;
+      btnConfirmCancel.textContent = 'Cancelling...';
+
+      try {
+        const res = await fetch(`/api/reservations/${encodeURIComponent(currentReservation.id)}/cancel`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const result = await res.json();
+
+        if (!res.ok || !result.success) {
+          throw new Error(result?.error?.message || 'Failed to cancel reservation.');
+        }
+
+        cancelModal.style.display = 'none';
+        currentReservation.status = 'DECLINED';
+        renderReservation(currentReservation);
+        showAlert('success', 'Your reservation has been successfully cancelled. A confirmation email has been dispatched.');
+      } catch (err) {
+        console.error('[Client Management] Cancellation error:', err);
+        cancelModal.style.display = 'none';
+        showAlert('error', err.message || 'Error cancelling reservation.');
+      } finally {
+        btnConfirmCancel.disabled = false;
+        btnConfirmCancel.textContent = 'Yes, Cancel Reservation';
+      }
+    });
+
+document.addEventListener('DOMContentLoaded', () => {
+  initializeManageTheme();
+
+  const urlParams =
+    new URLSearchParams(window.location.search);
+
+  const queryId =
+    urlParams.get('id');
+
+  if (queryId) {
+    lookupInput.value = queryId;
+    fetchReservation(queryId);
+  }
+});
+  </script>
+</body>
+</html>

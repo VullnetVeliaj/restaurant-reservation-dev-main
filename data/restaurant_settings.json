@@ -1,0 +1,257 @@
+{
+  "rest-001": {
+    "id": "default",
+    "restaurant_id": "rest-001",
+    "timezone": "America/New_York",
+    "max_covers_per_slot": 28,
+    "slot_interval_minutes": 30,
+    "min_advance_notice_mins": 45,
+    "max_advance_days": 60,
+    "operating_hours": {
+      "monday": {
+        "is_open": true,
+        "shifts": [
+          {
+            "name": "Dinner",
+            "start_time": "17:00",
+            "end_time": "23:00",
+            "max_covers": 28
+          }
+        ]
+      },
+      "tuesday": {
+        "is_open": true,
+        "shifts": [
+          {
+            "name": "Dinner",
+            "start_time": "17:00",
+            "end_time": "23:00",
+            "max_covers": 28
+          }
+        ]
+      },
+      "wednesday": {
+        "is_open": true,
+        "shifts": [
+          {
+            "name": "Dinner",
+            "start_time": "17:00",
+            "end_time": "23:00",
+            "max_covers": 28
+          }
+        ]
+      },
+      "thursday": {
+        "is_open": true,
+        "shifts": [
+          {
+            "name": "Dinner",
+            "start_time": "17:00",
+            "end_time": "23:00",
+            "max_covers": 28
+          }
+        ]
+      },
+      "friday": {
+        "is_open": true,
+        "shifts": [
+          {
+            "name": "Lunch",
+            "start_time": "12:00",
+            "end_time": "15:00",
+            "max_covers": 24
+          },
+          {
+            "name": "Dinner",
+            "start_time": "17:00",
+            "end_time": "23:30",
+            "max_covers": 32
+          }
+        ]
+      },
+      "saturday": {
+        "is_open": true,
+        "shifts": [
+          {
+            "name": "Brunch",
+            "start_time": "10:30",
+            "end_time": "15:00",
+            "max_covers": 28
+          },
+          {
+            "name": "Dinner",
+            "start_time": "17:00",
+            "end_time": "23:30",
+            "max_covers": 32
+          }
+        ]
+      },
+      "sunday": {
+        "is_open": true,
+        "shifts": [
+          {
+            "name": "All-Day Dining",
+            "start_time": "11:30",
+            "end_time": "21:30",
+            "max_covers": 24
+          }
+        ]
+      }
+    },
+    "branding": {
+      "primary_color": "#E5A93C",
+      "bg_color": "#8F725C",
+      "restaurant_name": "Grand Bistro & Oyster Bar"
+    },
+    "updated_at": "2026-09-02T11:53:00.530Z"
+  },
+  "rest-muxyvc69": {
+    "timezone": "Europe/Berlin",
+    "max_covers_per_slot": 20,
+    "slot_interval_minutes": 30,
+    "min_advance_notice_mins": 60,
+    "max_advance_days": 30,
+    "id": "f48dfd4d-4b70-4419-975e-c1d633ca7e14",
+    "restaurant_id": "rest-muxyvc69",
+    "created_at": "2026-10-07T10:30:34.137+00:00",
+    "updated_at": "2026-10-07T20:00:57.845584+00:00",
+    "operating_hours": {
+      "friday": {
+        "shifts": [
+          {
+            "name": "Lunch",
+            "end_time": "15:00",
+            "max_covers": 24,
+            "start_time": "12:00"
+          },
+          {
+            "name": "Dinner",
+            "end_time": "23:00",
+            "max_covers": 30,
+            "start_time": "17:30"
+          }
+        ],
+        "is_open": true
+      },
+      "monday": {
+        "shifts": [
+          {
+            "name": "Lunch",
+            "end_time": "17:00",
+            "max_covers": 20,
+            "start_time": "13:00"
+          },
+          {
+            "name": "Dinner",
+            "end_time": "22:30",
+            "max_covers": 24,
+            "start_time": "18:00"
+          }
+        ],
+        "is_open": true
+      },
+      "sunday": {
+        "shifts": [
+          {
+            "name": "Lunch",
+            "end_time": "16:00",
+            "max_covers": 24,
+            "start_time": "12:00"
+          },
+          {
+            "name": "Dinner",
+            "end_time": "21:30",
+            "max_covers": 20,
+            "start_time": "17:30"
+          }
+        ],
+        "is_open": true
+      },
+      "tuesday": {
+        "shifts": [
+          {
+            "name": "Lunch",
+            "end_time": "15:00",
+            "max_covers": 20,
+            "start_time": "12:00"
+          },
+          {
+            "name": "Dinner",
+            "end_time": "22:30",
+            "max_covers": 24,
+            "start_time": "18:00"
+          }
+        ],
+        "is_open": true
+      },
+      "saturday": {
+        "shifts": [
+          {
+            "name": "Brunch",
+            "end_time": "15:00",
+            "max_covers": 24,
+            "start_time": "11:00"
+          },
+          {
+            "name": "Dinner",
+            "end_time": "23:00",
+            "max_covers": 30,
+            "start_time": "17:00"
+          }
+        ],
+        "is_open": true
+      },
+      "thursday": {
+        "shifts": [
+          {
+            "name": "Lunch",
+            "end_time": "15:00",
+            "max_covers": 20,
+            "start_time": "12:00"
+          },
+          {
+            "name": "Dinner",
+            "end_time": "22:30",
+            "max_covers": 24,
+            "start_time": "18:00"
+          }
+        ],
+        "is_open": true
+      },
+      "wednesday": {
+        "shifts": [
+          {
+            "name": "Lunch",
+            "end_time": "15:00",
+            "max_covers": 20,
+            "start_time": "12:00"
+          },
+          {
+            "name": "Dinner",
+            "end_time": "22:30",
+            "max_covers": 24,
+            "start_time": "18:00"
+          }
+        ],
+        "is_open": true
+      }
+    },
+    "branding": {
+      "bg_color": "#a88b74",
+      "primary_color": "#d4a373",
+      "restaurant_name": "Restaurant Max"
+    },
+    "min_party_size": 1,
+    "max_party_size": 50,
+    "reservation_duration_minutes": 90,
+    "auto_confirm": false,
+    "cancellation_cutoff_hours": 0,
+    "same_day_booking": true,
+    "notify_guest_on_booking": true,
+    "notify_guest_on_status_change": true,
+    "notify_guest_on_cancellation": true,
+    "notify_owner_on_new_reservation": false,
+    "notify_owner_on_cancellation": false,
+    "owner_notification_email": "ingridaconiku99@gmail.com"
+  }
+}
