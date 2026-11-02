@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS restaurants (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     slug TEXT NOT NULL UNIQUE,
+    public_widget_key TEXT UNIQUE,
     logo_url TEXT,
     primary_color TEXT NOT NULL DEFAULT '#0284c7',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -23,8 +24,31 @@ CREATE TABLE IF NOT EXISTS restaurant_users (
     full_name TEXT NOT NULL,
     role TEXT NOT NULL DEFAULT 'STAFF' CHECK (role IN ('OWNER', 'MANAGER', 'STAFF')),
     is_active BOOLEAN NOT NULL DEFAULT true,
+    email_verified BOOLEAN NOT NULL DEFAULT false,
+    email_verified_at TIMESTAMPTZ,
+    session_version INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 2b. Table: email_verification_tokens
+CREATE TABLE IF NOT EXISTS email_verification_tokens (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES restaurant_users(id) ON DELETE CASCADE,
+    token_hash TEXT NOT NULL UNIQUE,
+    expires_at TIMESTAMPTZ NOT NULL,
+    used_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 2c. Table: password_reset_tokens
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES restaurant_users(id) ON DELETE CASCADE,
+    token_hash TEXT NOT NULL UNIQUE,
+    expires_at TIMESTAMPTZ NOT NULL,
+    used_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- 3. Table: restaurant_settings (Capacity & Booking Rules)
@@ -36,6 +60,20 @@ CREATE TABLE IF NOT EXISTS restaurant_settings (
     slot_interval_minutes INTEGER NOT NULL DEFAULT 15,
     min_advance_notice_mins INTEGER NOT NULL DEFAULT 60,
     max_advance_days INTEGER NOT NULL DEFAULT 30,
+    operating_hours JSONB,
+    branding JSONB,
+    min_party_size INTEGER NOT NULL DEFAULT 1,
+    max_party_size INTEGER NOT NULL DEFAULT 50,
+    reservation_duration_minutes INTEGER NOT NULL DEFAULT 90,
+    auto_confirm BOOLEAN NOT NULL DEFAULT false,
+    cancellation_cutoff_hours INTEGER NOT NULL DEFAULT 0,
+    same_day_booking BOOLEAN NOT NULL DEFAULT true,
+    notify_guest_on_booking BOOLEAN NOT NULL DEFAULT true,
+    notify_guest_on_status_change BOOLEAN NOT NULL DEFAULT true,
+    notify_guest_on_cancellation BOOLEAN NOT NULL DEFAULT true,
+    notify_owner_on_new_reservation BOOLEAN NOT NULL DEFAULT false,
+    notify_owner_on_cancellation BOOLEAN NOT NULL DEFAULT false,
+    owner_notification_email TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -160,7 +198,14 @@ ALTER TABLE reservations DROP CONSTRAINT IF EXISTS reservations_status_check;
 ALTER TABLE reservations ADD CONSTRAINT reservations_status_check 
 CHECK (status IN ('PENDING', 'CONFIRMED', 'SEATED', 'COMPLETED', 'CANCELLED', 'NO_SHOW', 'DECLINED'));
 
--- Migration: Ensure updated_at & lifecycle columns exist and reload PostgREST schema cache
+-- Migration: Ensure updated_at, lifecycle & public_widget_key columns exist and reload PostgREST schema cache
+ALTER TABLE restaurants ADD COLUMN IF NOT EXISTS public_widget_key TEXT UNIQUE;
+ALTER TABLE restaurant_users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE restaurant_users ADD COLUMN IF NOT EXISTS email_verified_at TIMESTAMPTZ;
+ALTER TABLE restaurant_users ADD COLUMN IF NOT EXISTS session_version INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS operating_hours JSONB;
+ALTER TABLE restaurant_settings ADD COLUMN IF NOT EXISTS branding JSONB;
+ALTER TABLE reservations ADD COLUMN IF NOT EXISTS cancellation_token_hash TEXT;
 ALTER TABLE reservations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 ALTER TABLE reservations ADD COLUMN IF NOT EXISTS seated_at TIMESTAMPTZ;
 ALTER TABLE reservations ADD COLUMN IF NOT EXISTS completed_at TIMESTAMPTZ;
