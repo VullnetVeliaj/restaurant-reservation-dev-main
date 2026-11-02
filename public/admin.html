@@ -3346,11 +3346,12 @@
         return;
       }
 
+      const embedOrigin = window.location.origin || 'https://restaurant-reservation-dev-main.vercel.app';
       textarea.value = `
 <div id="restaurant-booking-widget"></div>
 
 <script
-  src="https://restaurant-reservation-dev.vercel.app/booking-widget.js"
+  src="${embedOrigin}/booking-widget.js"
   data-widget-key="${activePublicWidgetKey}"
   data-theme="light">
 <\/script>

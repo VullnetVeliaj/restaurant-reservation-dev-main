@@ -33,7 +33,9 @@ app.set('trust proxy', resolveTrustProxy());
 const TRUSTED_ORIGINS = [
   'http://restaurant-demo.local',
   'https://novi-restaurant-demo.vercel.app',
-  'https://restaurant-reservation-dev.vercel.app'
+  'https://restaurant-reservation-dev.vercel.app',
+  'https://restaurant-reservation-dev-main.vercel.app',
+  ...(process.env.APP_URL ? [process.env.APP_URL] : [])
 ];
 
 /**

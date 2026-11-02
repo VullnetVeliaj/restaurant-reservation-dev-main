@@ -19,7 +19,9 @@
   // SCRIPT CONFIG
   // ============================================================
 
-  const currentScript = document.currentScript;
+  const currentScript =
+    document.currentScript ||
+    document.querySelector('script[src*="booking-widget.js"][data-widget-key], script[src*="booking-widget.js"]');
 
  const scriptConfig = currentScript
   ? {
@@ -66,7 +68,7 @@
 
   // The widget is embedded on external sites (e.g. WordPress), so every API
   // call must go to the TableAI backend, never to the host page's origin.
-  const DEFAULT_API_ORIGIN = 'https://restaurant-reservation-dev.vercel.app';
+  const DEFAULT_API_ORIGIN = 'https://restaurant-reservation-dev-main.vercel.app';
 
   function detectApiOrigin() {
     const script =
