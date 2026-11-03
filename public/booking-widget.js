@@ -2372,13 +2372,14 @@ function applyBrandColors(container, primaryColor, bgColor, accentColor) {
               <label
                 for="rbw-modal-lookup-id"
               >
-                  Reservierungs-ID
+                  Reservierungs-ID / Code
               </label>
 
               <input
                 type="text"
                 class="rbw-input"
                 id="rbw-modal-lookup-id"
+                placeholder="z. B. E92212AD"
               />
 
             </div>
@@ -4918,10 +4919,14 @@ const refreshAvailability = () => {
 
 
       try {
+        const params = new URLSearchParams();
+        if (this.options.widgetKey) params.set('widget_key', this.options.widgetKey);
+        if (this.options.restaurantId) params.set('restaurant_id', this.options.restaurantId);
+        const queryString = params.toString() ? `?${params.toString()}` : '';
 
         const response =
           await fetch(
-            this.apiUrl(`/api/reservations/${encodeURIComponent(id)}`)
+            this.apiUrl(`/api/reservations/lookup/${encodeURIComponent(id)}${queryString}`)
           );
 
 
@@ -5002,6 +5007,11 @@ this.container.querySelector(
         data.special_requests ||
         'Keine';
 
+      if (this.modalCancelBtn) {
+        const st = String(data.status || 'PENDING').toUpperCase();
+        this.modalCancelBtn.style.display =
+          st === 'CANCELLED' || st === 'DECLINED' ? 'none' : 'block';
+      }
 
       this.modalResultCard.style.display =
         'block';
@@ -5038,7 +5048,15 @@ this.container.querySelector(
             )}/cancel`),
             {
               method:
-                'PUT'
+                'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                code: this.currentLookupData.booking_code || this.currentLookupData.id,
+                widget_key: this.options.widgetKey || undefined,
+                restaurant_id: this.options.restaurantId || undefined
+              })
             }
           );
 
@@ -5246,8 +5264,12 @@ this.container.querySelector(
       this.successView.style.display =
         'block';
 
+      const shortCode =
+        reservationData?.booking_code ||
+        (reservationData?.id ? String(reservationData.id).split('-')[0].toUpperCase() : '');
 
       this.uuidText.textContent =
+        shortCode ||
         reservationData?.id ||
         'Bestätigt';
     }
@@ -7041,9 +7063,12 @@ this.container.querySelector(
       this.successView.querySelector('.rbwp-success-text').textContent =
         `${popupGuestsLabel(payload.guests)} · ${popupFormatDate(payload.date)} · ${payload.time} Uhr`;
 
-      if (reservation.id) {
+      if (reservation.id || reservation.booking_code) {
+        const shortCode =
+          reservation.booking_code ||
+          String(reservation.id || '').split('-')[0].toUpperCase();
         const idBox = this.successView.querySelector('.rbwp-success-id');
-        idBox.textContent = `Reservierungs-ID: ${reservation.id}`;
+        idBox.textContent = `Reservierungs-Code: ${shortCode}`;
         idBox.hidden = false;
       }
 

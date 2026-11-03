@@ -428,14 +428,14 @@ body.manage-light-theme .modal-overlay {
     <section class="card">
       <h2>Lookup Reservation</h2>
       <p style="font-size: 0.85rem; color: var(--text-muted);">
-        Enter your unique UUID string received upon booking or in your confirmation email.
+        Enter your 8-character Reservation Code (or full UUID) received upon booking or in your confirmation email.
       </p>
       <form id="lookup-form" class="search-box">
         <input 
           type="text" 
           class="search-input" 
           id="lookup-id" 
-          placeholder="Paste UUID (e.g. 550e8400-e29b-41d4-a716-446655440000)" 
+          placeholder="Enter Reservation Code (e.g. E92212AD)" 
           required 
         />
         <button type="submit" class="btn-primary" id="btn-search">Lookup</button>
@@ -630,7 +630,7 @@ if (manageThemeSelector) {
     }
 
     function renderReservation(res) {
-      displayUuid.textContent = res.id;
+      displayUuid.textContent = res.booking_code || (res.id ? String(res.id).split('-')[0].toUpperCase() : '');
       displayName.textContent = res.customer_name || 'N/A';
       displayParty.textContent = `${res.party_size || 1} guest(s)`;
       displayDate.textContent = res.reservation_date || 'N/A';

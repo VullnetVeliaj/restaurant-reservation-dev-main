@@ -27,8 +27,13 @@ const {
 function toPublicReservation(record, { includeCancellationToken = false } = {}) {
   if (!record) return null;
 
+  const bookingCode =
+    record.booking_code ||
+    String(record.id || '').trim().split('-')[0].toUpperCase();
+
   const publicReservation = {
     id: record.id,
+    booking_code: bookingCode,
     restaurant_id: record.restaurant_id,
     status: record.status,
     name: record.name || record.customer_name,
@@ -303,13 +308,72 @@ router.post('/', publicBookingLimiter, async (req, res) => {
 });
 
 /**
- * 2. GET /api/reservations/:id
- * Look up a single reservation profile using its unique UUID string
+ * Helper to resolve optional restaurant scoping on guest lookup/cancel
+ */
+async function resolveOptionalRestaurantId(req) {
+  const hasWidgetOrRest =
+    (req.query && (req.query.widget_key || req.query.restaurant_id)) ||
+    (req.body && (req.body.widget_key || req.body.restaurant_id));
+  if (!hasWidgetOrRest) return null;
+  try {
+    return await resolvePublicRestaurantId(req);
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * 2a. GET /api/reservations/lookup/:code
+ * Public guest lookup by short 8-char reservation code, UUID, or cancellation token.
+ * Returns only guest-facing fields (toPublicReservation).
+ */
+router.get('/lookup/:code', lookupLimiter, async (req, res) => {
+  const { code } = req.params;
+  try {
+    if (!code || !String(code).trim()) {
+      return res.status(400).json({
+        success: false,
+        error: { message: 'Bitte geben Sie Ihren Reservierungscode ein.' }
+      });
+    }
+
+    const restaurantId = await resolveOptionalRestaurantId(req);
+    const reservation = await reservationService.getReservationByCodeOrId(code, { restaurantId });
+
+    if (!reservation) {
+      return res.status(404).json({
+        success: false,
+        error: { message: 'Keine Reservierung mit diesem Code gefunden.' }
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: toPublicReservation(reservation)
+    });
+  } catch (err) {
+    return res.status(404).json({
+      success: false,
+      error: { message: 'Keine Reservierung mit diesem Code gefunden.', details: err.message }
+    });
+  }
+});
+
+/**
+ * 2b. GET /api/reservations/:id
+ * Look up a single reservation by short code or UUID.
+ * - Authenticated staff/admin receives full tenant-scoped record.
+ * - Unauthenticated guest receives data-minimised public reservation shape.
  */
 router.get(
   '/:id',
   lookupLimiter,
-  authenticateJWT,
+  async (req, res, next) => {
+    if (req.headers.authorization) {
+      return authenticateJWT(req, res, next);
+    }
+    return next();
+  },
   async (req, res) => {
   const { id } = req.params;
 
@@ -317,35 +381,50 @@ router.get(
     if (!id) {
       return res.status(400).json({
         success: false,
-        error: { message: 'Reservation UUID string is required.' }
+        error: { message: 'Reservation code or UUID is required.' }
       });
     }
 
-    const reservation = await reservationService.getReservationById(id);
+    // Staff / Admin path
+    if (req.user) {
+      const reservation = await reservationService.getReservationByCodeOrId(id);
+
+      if (!reservation) {
+        return res.status(404).json({
+          success: false,
+          error: { message: `Reservation with ID '${id}' was not found.` }
+        });
+      }
+
+      if (reservation.restaurant_id !== req.user.restaurant_id) {
+        return res.status(403).json({
+          success: false,
+          error: {
+            message: 'Sie haben keine Berechtigung, diese Reservierung aufzurufen.'
+          }
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: reservation
+      });
+    }
+
+    // Public Guest path (widget & manage.html)
+    const restaurantId = await resolveOptionalRestaurantId(req);
+    const reservation = await reservationService.getReservationByCodeOrId(id, { restaurantId });
 
     if (!reservation) {
       return res.status(404).json({
         success: false,
-        error: { message: `Reservation with ID '${id}' was not found.` }
+        error: { message: 'Keine Reservierung mit diesem Code gefunden.' }
       });
     }
 
-if (
-  reservation.restaurant_id !==
-  req.user.restaurant_id
-) {
-  return res.status(403).json({
-    success: false,
-    error: {
-      message:
-        'Sie haben keine Berechtigung, diese Reservierung aufzurufen.'
-    }
-  });
-}
-
     return res.status(200).json({
       success: true,
-      data: reservation
+      data: toPublicReservation(reservation)
     });
   } catch (err) {
     return res.status(404).json({
@@ -357,30 +436,39 @@ if (
 
 /**
  * 3. POST /api/reservations/cancel & PUT /:id/cancel & POST /:id/cancel & PATCH /:id/cancel
- * Client self-cancellation by ID or tracking code
+ * Client self-cancellation by short booking code, UUID, or cancellation token
  */
 const handleCancelReservation = async (req, res) => {
- const cancellationToken =
-  req.body.cancellation_token ||
-  req.query.cancellation_token;
+  const tokenOrCode =
+    req.body?.cancellation_token ||
+    req.query?.cancellation_token ||
+    req.body?.code ||
+    req.query?.code ||
+    req.body?.id ||
+    req.params?.id;
 
   try {
-    if (!cancellationToken) {
-  return res.status(400).json({
-    success: false,
-    error: {
-      message:
-        'Ein gültiger Stornierungslink ist erforderlich.'
+    if (!tokenOrCode || !String(tokenOrCode).trim()) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          message: 'Ein gültiger Reservierungscode oder Stornierungslink ist erforderlich.'
+        }
+      });
     }
-  });
-}
+
+    const restaurantId = await resolveOptionalRestaurantId(req);
 
     // Look up first so the restaurant's cancellation cutoff can be enforced
-    const existing = await reservationService.getReservationByCancellationToken(cancellationToken);
+    let existing = await reservationService.getReservationByCancellationToken(tokenOrCode);
+    if (!existing) {
+      existing = await reservationService.getReservationByCodeOrId(tokenOrCode, { restaurantId });
+    }
+
     if (!existing) {
       return res.status(404).json({
         success: false,
-        error: { message: 'Der Stornierungslink ist ungültig oder nicht mehr verfügbar.' }
+        error: { message: 'Die Reservierung wurde nicht gefunden oder ist nicht mehr verfügbar.' }
       });
     }
 
@@ -396,10 +484,7 @@ const handleCancelReservation = async (req, res) => {
       });
     }
 
-    const updated =
-  await reservationService.cancelReservation(
-    cancellationToken
-  );
+    const updated = await reservationService.cancelReservation(tokenOrCode, { restaurantId });
 
     // Guest / owner emails according to this restaurant's notification preferences
     await notificationService.onGuestCancelled(updated, { settings });
@@ -413,7 +498,7 @@ const handleCancelReservation = async (req, res) => {
     if (err.code === 'INVALID_CANCELLATION_TOKEN') {
       return res.status(404).json({
         success: false,
-        error: { message: 'Der Stornierungslink ist ungültig oder nicht mehr verfügbar.' }
+        error: { message: 'Die Reservierung wurde nicht gefunden oder ist nicht mehr verfügbar.' }
       });
     }
 

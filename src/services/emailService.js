@@ -298,6 +298,16 @@ function getEmailLayout(title, content, footerHtml = null) {
 }
 
 /**
+ * Helper to derive the short 8-character uppercase reservation code from a reservation object
+ */
+function getShortBookingCode(reservation) {
+  if (!reservation) return 'N/A';
+  if (reservation.booking_code) return String(reservation.booking_code).toUpperCase();
+  if (reservation.id) return String(reservation.id).trim().split('-')[0].toUpperCase();
+  return 'N/A';
+}
+
+/**
  * 1. Template: 'Reservation Received'
  */
 function generateReservationReceivedEmail(reservation) {
@@ -305,13 +315,14 @@ function generateReservationReceivedEmail(reservation) {
   const resDate = reservation.date || reservation.reservation_date || 'N/A';
   const resTime = reservation.time || reservation.reservation_time || 'N/A';
   const guests = reservation.guests || reservation.party_size || 'N/A';
+  const bookingCode = getShortBookingCode(reservation);
 
   const content = `
     <p class="notice">We have received your reservation request and it is currently awaiting confirmation from the restaurant.</p>
 
     <div class="card">
-      <div style="font-size: 13px; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Reservation Tracking ID</div>
-      <div class="lookup-id">${reservation.id}</div>
+      <div style="font-size: 13px; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Reservation Code</div>
+      <div class="lookup-id">${bookingCode}</div>
     </div>
 
     <table class="details-table">
@@ -359,13 +370,14 @@ function generateReservationStatusUpdatedEmail(reservation, status) {
   const resDate = reservation.date || reservation.reservation_date || 'N/A';
   const resTime = reservation.time || reservation.reservation_time || 'N/A';
   const guests = reservation.guests || reservation.party_size || 'N/A';
+  const bookingCode = getShortBookingCode(reservation);
 
   const content = `
     <p class="notice">Your reservation status has been updated to: <strong>[${normalizedStatus}]</strong></p>
 
     <div class="card">
-      <div style="font-size: 13px; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Reservation Tracking ID</div>
-      <div class="lookup-id">${reservation.id}</div>
+      <div style="font-size: 13px; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Reservation Code</div>
+      <div class="lookup-id">${bookingCode}</div>
     </div>
 
     <table class="details-table">
@@ -408,13 +420,14 @@ function generateManualReservationEmail(reservation) {
   const resDate = reservation.date || reservation.reservation_date || 'N/A';
   const resTime = reservation.time || reservation.reservation_time || 'N/A';
   const guests = reservation.guests || reservation.party_size || 'N/A';
+  const bookingCode = getShortBookingCode(reservation);
 
   const content = `
     <p class="notice">A new reservation has been booked for you by the restaurant coordinator.</p>
 
     <div class="card">
-      <div style="font-size: 13px; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Reservation Tracking ID</div>
-      <div class="lookup-id">${reservation.id}</div>
+      <div style="font-size: 13px; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Reservation Code</div>
+      <div class="lookup-id">${bookingCode}</div>
     </div>
 
     <table class="details-table">

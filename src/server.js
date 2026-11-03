@@ -48,6 +48,8 @@ const PUBLIC_WIDGET_PATHS = [
   /^(\/api)?\/public\/widget\/[^/]+\/?$/,
   /^(\/api)?\/(reservations\/)?availability\/?$/,
   /^(\/api)?\/reservations\/?$/,
+  /^(\/api)?\/reservations\/lookup\/[^/]+\/?$/,
+  /^(\/api)?\/reservations\/(?!guest-check\/?$)[^/]+\/?$/,
   /^(\/api)?\/reservations\/cancel\/?$/,
   /^(\/api)?\/reservations\/[^/]+\/cancel\/?$/,
   /^(\/api)?\/voice(\/parse)?\/?$/

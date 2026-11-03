@@ -29,10 +29,16 @@ function savePersisted(filePath, data) {
   } catch (e) { }
 }
 
+const formatBookingCode = (id) => {
+  if (!id) return '';
+  return String(id).trim().split('-')[0].toUpperCase();
+};
+
 const normalizeReservation = (record) => {
   if (!record) return record;
   return {
     ...record,
+    booking_code: record.booking_code || formatBookingCode(record.id),
     customer_name: record.name || record.customer_name,
     customer_email: record.email || record.customer_email,
     customer_phone: record.phone || record.customer_phone,
@@ -729,6 +735,81 @@ class ReservationService {
   }
 
   /**
+   * Look up a reservation by short 8-char booking code (e.g. "E92212AD"),
+   * full UUID, or cancellation token. Optionally scoped to a restaurant.
+   */
+  async getReservationByCodeOrId(codeOrId, { restaurantId = null } = {}) {
+    if (!codeOrId) return null;
+    const rawTrimmed = String(codeOrId).trim();
+    if (!rawTrimmed) return null;
+
+    const cleaned = rawTrimmed.replace(/^#/, '').replace(/^res-/i, '').trim();
+
+    // 1. Exact full UUID lookup
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleaned)) {
+      const found = await this.getReservationById(cleaned.toLowerCase());
+      if (found && (!restaurantId || found.restaurant_id === restaurantId)) {
+        return found;
+      }
+      return null;
+    }
+
+    // 2. Short 8-character hex booking code (first segment of UUID)
+    if (/^[0-9a-f]{8}$/i.test(cleaned)) {
+      const prefix = cleaned.toLowerCase();
+      const minUuid = `${prefix}-0000-0000-0000-000000000000`;
+      const maxUuid = `${prefix}-ffff-ffff-ffff-ffffffffffff`;
+
+      try {
+        let query = supabase
+          .from('reservations')
+          .select('*')
+          .gte('id', minUuid)
+          .lte('id', maxUuid)
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        if (restaurantId) {
+          query = query.eq('restaurant_id', restaurantId);
+        }
+
+        const { data, error } = await query.maybeSingle();
+        if (!error && data) {
+          return normalizeReservation(data);
+        }
+      } catch (err) {
+        if (!allowLocalFallback) throw err;
+      }
+
+      if (allowLocalFallback) {
+        const persistedRes = loadPersisted(RES_FILE, DEFAULT_RESERVATIONS);
+        for (const tenantId of [restaurantId, ...Object.keys(persistedRes), ...Object.keys(localReservationsStore)].filter(Boolean)) {
+          const list = persistedRes[tenantId] || localReservationsStore[tenantId] || [];
+          const found = list.find((r) => String(r.id || '').toLowerCase().startsWith(`${prefix}-`));
+          if (found && (!restaurantId || found.restaurant_id === restaurantId)) {
+            return normalizeReservation(found);
+          }
+        }
+      }
+
+      return null;
+    }
+
+    // 3. Fallback: cancellation token or non-UUID id
+    const byToken = await this.getReservationByCancellationToken(rawTrimmed);
+    if (byToken && (!restaurantId || byToken.restaurant_id === restaurantId)) {
+      return byToken;
+    }
+
+    const byId = await this.getReservationById(rawTrimmed);
+    if (byId && (!restaurantId || byId.restaurant_id === restaurantId)) {
+      return byId;
+    }
+
+    return null;
+  }
+
+  /**
    * Read-Only VIP & 3-Strike No-Show check for incoming guests (Additive logic)
    */
   async checkGuestStatus(restaurantId, { phone, email, name } = {}) {
@@ -1168,21 +1249,29 @@ async getReservationByCancellationToken(
 }
 
   /**
-   * Cancel reservation by ID or code (soft update to CANCELLED instead of hard delete)
+   * Cancel reservation by cancellation token, short booking code, or ID (soft update to CANCELLED)
    */
   async cancelReservation(
-  cancellationToken
+  cancellationTokenOrCode,
+  { restaurantId = null } = {}
 ) {
-  if (!cancellationToken) {
+  if (!cancellationTokenOrCode) {
     throw new Error(
       'Ein Stornierungstoken ist erforderlich.'
     );
   }
 
-  const reservation =
+  let reservation =
     await this.getReservationByCancellationToken(
-      cancellationToken
+      cancellationTokenOrCode
     );
+
+  if (!reservation) {
+    reservation = await this.getReservationByCodeOrId(
+      cancellationTokenOrCode,
+      { restaurantId }
+    );
+  }
 
   if (!reservation) {
     const error =
